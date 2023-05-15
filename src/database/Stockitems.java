@@ -8,12 +8,12 @@ import java.util.Random;
 // getCoordinaten() print de coordinaten van een bepaald StockItemID, de input is een int of int[]. De output is een array met coordinaten [x, y] of meerdere arrays met coordinaten [[x, y], [x, y]].
 // randomXY() zorgt voor het vullen van de coordinaten met random inten (0-4) in de database. Geen input of output.
 
-public class Stockitems extends Connectie{
-    public ArrayList<java.lang.String> getCoordinaten (int stockitemid) throws SQLException {
-        if(!this.isConnected())
+public class Stockitems extends Connectie {
+    public ArrayList<java.lang.String> getCoordinaten(int stockitemid) throws SQLException {
+        if (!this.isConnected())
             this.connect();
         ArrayList<ArrayList<java.lang.String>> result = queryResult("select x, y from stockitemholdings where StockItemID = " + stockitemid);
-        return(result.get(0));
+        return (result.get(0));
     }
 
     public ArrayList<ArrayList<String>> getCoordinaten(int[] stockitemid) throws SQLException {
