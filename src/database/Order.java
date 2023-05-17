@@ -163,7 +163,7 @@ public class Order extends Connectie {
     }
 
     private int insertOrder(LocalDate date, int customerID) throws SQLException {
-        PreparedStatement orderStatement = connection.prepareStatement("INSERT INTO ordertabel (orderdate, customerid) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement orderStatement = connection.prepareStatement("INSERT INTO ordertabel (orderdate, picked, customerid) VALUES (?, 0, ?)", Statement.RETURN_GENERATED_KEYS);
         orderStatement.setDate(1, java.sql.Date.valueOf(date));
         orderStatement.setInt(2, customerID);
         orderStatement.executeUpdate();
