@@ -29,6 +29,8 @@ public class Stockitems extends Connectie {
         return results;
     }
 
+
+
     public void randomXY() throws SQLException {
         if (!this.isConnected())
             this.connect();
