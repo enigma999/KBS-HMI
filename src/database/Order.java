@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.List;
 import database.Stockitems;
 
-//import com.github.javafaker.Faker;
+//rip Faker;
 
 // getOrderStockID(), input is int(orderid), hij returnt een array met de stockitemids die bij de order horen.
 // getOrderLines(), input is int(orderid), hij returnt een array met de orderlineids die bij de order horen.
@@ -185,26 +185,4 @@ public class Order extends Connectie {
         statement.setDouble(5, unitPrice);
         statement.executeUpdate();
     }
-
-//    public void fillCustomer(int number_of_names) throws SQLException
-//    {
-//        if (!this.isConnected())
-//            this.connect();
-//
-//        Faker faker = new Faker(new Locale("NL"));
-//
-//
-//        String query = "INSERT INTO customer (customername, address) VALUES (?, ?)";
-//        PreparedStatement ps = this.connection.prepareStatement(query);
-//
-//        for (int i = 0; i < number_of_names; i++) {
-//            String name = faker.name().fullName();
-//            String address = faker.address().streetAddress();
-//            ps.setString(1, name);
-//            ps.setString(2, address);
-//            ps.executeUpdate();
-//        }
-//
-//
-//    }
 }
