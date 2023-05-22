@@ -60,23 +60,6 @@ public class SerialComm implements Runnable{
         serialPort.writeBytes(bytes, bytes.length);
         isSendingData = false;
     }
-    public static void main(String[] args) {
-        Scanner scanner1 = new Scanner(System.in);
-        SerialComm sc = new SerialComm("COM6");
-        scanner1.nextLine();
-        Thread thread = new Thread(sc);
-        thread.start();
-        sc.stuurCoords(3,4);
-        while (true) {
-            scanner1.nextLine();
-            sc.noodstop();
-            scanner1.nextLine();
-            sc.besturing(true);
-
-        }
-    }
-
-
 
     public void run() {
         while (true) {
