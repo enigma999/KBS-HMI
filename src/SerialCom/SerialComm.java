@@ -1,6 +1,7 @@
+package SerialCom;
+
 import com.fazecast.jSerialComm.*;
 
-import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
