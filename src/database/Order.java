@@ -123,7 +123,7 @@ public class Order extends Connectie {
     public ArrayList<java.lang.String> getInfoStockitem(int stockitemid) throws SQLException{
         if (!this.isConnected())
             this.connect();
-        ArrayList<ArrayList<java.lang.String>> result = queryResult("select stockitemname, unitprice from stockitems where StockItemID = " + stockitemid);
+        ArrayList<ArrayList<java.lang.String>> result = queryResult("select stockitemname, unitprice from stockitem where StockItemID = " + stockitemid);
         return (result.get(0));
     }
 
