@@ -19,8 +19,7 @@ import database.Stockitems;
 // getOrderDate(), input is int(orderid), returnt orderid en orderdatum.
 // printPakBon(), input is int(orderid), print de pakbon in de terminal.
 // getPakBon(), input is int(orderid), returnt een array met alle informatie van de pakbon.
-// fillCustomer(), input is een int van hoeveel namen je in de database wil toevoegen, vult de database met random addressen en namen.
-// InsertOrder(), input is een int[] van stockitemids en een int[] van quantities, geen output
+// isPicked(), input is int(orderid), geen output, zorgt dat de tabel is picked wordt bijgewerkt.
 
 public class Order extends Connectie {
     public int[] getOrderStockID(int orderid) throws SQLException {
@@ -119,70 +118,14 @@ public class Order extends Connectie {
 
         return orderAndCustomerInfo;
     }
-
-    public ArrayList<java.lang.String> getInfoStockitem(int stockitemid) throws SQLException{
-        if (!this.isConnected())
-            this.connect();
-        ArrayList<ArrayList<java.lang.String>> result = queryResult("select stockitemname, unitprice from stockitems where StockItemID = " + stockitemid);
-        return (result.get(0));
-    }
-
-
-    public void InsertOrder(int[] stockitemids, int[] quantities) throws SQLException {
+    public void isPicked(int orderid) throws SQLException {
         if (!this.isConnected())
             this.connect();
 
-        String customerName = "Manual";
-        LocalDate date = LocalDate.now();
+        String updateQuery = "UPDATE ordertabel SET picked = 1 WHERE OrderID = " + orderid;
 
-        int customerID = findCustomerID(customerName);
-        int newOrderID = insertOrder(date, customerID);
-
-        for (int i = 0; i < stockitemids.length; i++) {
-            int stockitemid = stockitemids[i];
-            int quantity = quantities[i];
-
-            ArrayList<String> stockitemInfo = getInfoStockitem(stockitemid);
-            String stockitemName = stockitemInfo.get(0);
-            double unitPrice = Double.parseDouble(stockitemInfo.get(1));
-
-            insertOrderLine(newOrderID, stockitemid, stockitemName, quantity, unitPrice);
-        }
-    }
-
-    private int findCustomerID(String customerName) throws SQLException {
-        PreparedStatement customerStatement = connection.prepareStatement("SELECT CustomerID FROM customer WHERE CustomerName = ?");
-        customerStatement.setString(1, customerName);
-        ResultSet customerResult = customerStatement.executeQuery();
-
-        if (customerResult.next()) {
-            return customerResult.getInt("CustomerID");
-        } else {
-            throw new RuntimeException("Customer not found for name: " + customerName);
-        }
-    }
-
-    private int insertOrder(LocalDate date, int customerID) throws SQLException {
-        PreparedStatement orderStatement = connection.prepareStatement("INSERT INTO ordertabel (orderdate, customerid) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-        orderStatement.setDate(1, java.sql.Date.valueOf(date));
-        orderStatement.setInt(2, customerID);
-        orderStatement.executeUpdate();
-
-        ResultSet generatedKeys = orderStatement.getGeneratedKeys();
-        if (generatedKeys.next()) {
-            return generatedKeys.getInt(1);
-        }
-
-        throw new SQLException("Failed to retrieve new order ID.");
-    }
-
-    private void insertOrderLine(int orderID, int stockitemid, String description, int quantity, double unitPrice) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement("INSERT INTO orderline (orderid, stockitemid, description, quantity, unitprice) VALUES (?, ?, ?, ?, ?)");
-        statement.setInt(1, orderID);
-        statement.setInt(2, stockitemid);
-        statement.setString(3, description);
-        statement.setInt(4, quantity);
-        statement.setDouble(5, unitPrice);
-        statement.executeUpdate();
+        Statement statement = connection.createStatement();
+        int rowsAffected = statement.executeUpdate(updateQuery);
+        statement.close();
     }
 }
