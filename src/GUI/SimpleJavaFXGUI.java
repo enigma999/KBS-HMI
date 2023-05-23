@@ -20,6 +20,8 @@ public class SimpleJavaFXGUI extends Application {
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.setMinWidth(400);
+        primaryStage.setMinHeight(400);
     }
 
     // for the benefit of environments that don't support direct launch
