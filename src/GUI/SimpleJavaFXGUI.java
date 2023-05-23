@@ -49,4 +49,14 @@ public class SimpleJavaFXGUI extends Application {
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.setScene(scene);
     }
+
+    public void TSPTest(MouseEvent mouseEvent) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("TSPTest.fxml"));
+        Scene scene = new Scene(root);
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.setScene(scene);
+    }
+
+    public void SaveOrder(MouseEvent mouseEvent) {
+    }
 }
