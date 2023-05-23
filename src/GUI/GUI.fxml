@@ -3,10 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.SimpleJavaFXGUI">
    <children>
-      <Button layoutX="531.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#ViewOrders" text="Orders" />
-      <Button layoutX="459.0" layoutY="15.0" mnemonicParsing="false" onMouseClicked="#TSPTest" text="TSP Test" />
+      <Button layoutX="531.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#ViewOrders" text="Orders" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0" />
+      <Button layoutX="459.0" layoutY="15.0" mnemonicParsing="false" onMouseClicked="#TSPTest" text="TSP Test" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="15.0" />
    </children>
 </AnchorPane>
