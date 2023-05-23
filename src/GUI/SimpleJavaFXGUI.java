@@ -32,10 +32,7 @@ public class SimpleJavaFXGUI extends Application {
     }
 
     public void BackGUI(MouseEvent mouseEvent) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
-        Scene scene = new Scene(root);
-        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        stage.setScene(scene);
+        setScreen(mouseEvent,"GUI.fxml");
     }
 
 
@@ -46,19 +43,20 @@ public class SimpleJavaFXGUI extends Application {
     }
 
     public void ViewOrders(MouseEvent mouseEvent) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("OrderWeergave.fxml"));
-        Scene scene = new Scene(root);
-        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        stage.setScene(scene);
+        setScreen(mouseEvent,"OrderWeergave.fxml");
     }
 
     public void TSPTest(MouseEvent mouseEvent) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("TSPTest.fxml"));
-        Scene scene = new Scene(root);
-        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-        stage.setScene(scene);
+        setScreen(mouseEvent,"TSPTest.fxml");
     }
 
     public void SaveOrder(MouseEvent mouseEvent) {
+    }
+
+    private void setScreen(MouseEvent mouseEvent, String page) throws IOException{
+        Parent root = FXMLLoader.load(getClass().getResource(page));
+        Scene scene = new Scene(root);
+        Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+        stage.setScene(scene);
     }
 }
