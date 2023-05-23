@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.SimpleJavaFXGUI">
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.SimpleJavaFXGUI">
    <children>
       <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#BackGUI" text="Terug" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="15.0" />
    </children>
