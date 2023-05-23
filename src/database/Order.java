@@ -19,7 +19,7 @@ import database.Stockitems;
 // getOrderDate(), input is int(orderid), returnt orderid en orderdatum.
 // printPakBon(), input is int(orderid), print de pakbon in de terminal.
 // getPakBon(), input is int(orderid), returnt een array met alle informatie van de pakbon.
-// fillCustomer(), input is een int van hoeveel namen je in de database wil toevoegen, vult de database met random addressen en namen.
+// isPicked(), input is int(orderid), geen output, zorgt dat de tabel is picked wordt bijgewerkt.
 // InsertOrder(), input is een int[] van stockitemids en een int[] van quantities, geen output
 
 public class Order extends Connectie {
@@ -123,8 +123,19 @@ public class Order extends Connectie {
     public ArrayList<java.lang.String> getInfoStockitem(int stockitemid) throws SQLException{
         if (!this.isConnected())
             this.connect();
-        ArrayList<ArrayList<java.lang.String>> result = queryResult("select stockitemname, unitprice from stockitems where StockItemID = " + stockitemid);
+        ArrayList<ArrayList<java.lang.String>> result = queryResult("select stockitemname, unitprice from stockitem where StockItemID = " + stockitemid);
         return (result.get(0));
+    }
+
+    public void isPicked(int orderid) throws SQLException {
+        if (!this.isConnected())
+            this.connect();
+
+        String updateQuery = "UPDATE ordertabel SET picked = 1 WHERE OrderID = " + orderid;
+
+        Statement statement = connection.createStatement();
+        int rowsAffected = statement.executeUpdate(updateQuery);
+        statement.close();
     }
 
 
@@ -163,7 +174,7 @@ public class Order extends Connectie {
     }
 
     private int insertOrder(LocalDate date, int customerID) throws SQLException {
-        PreparedStatement orderStatement = connection.prepareStatement("INSERT INTO ordertabel (orderdate, customerid) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement orderStatement = connection.prepareStatement("INSERT INTO ordertabel (orderdate, picked, customerid) VALUES (?, 0, ?)", Statement.RETURN_GENERATED_KEYS);
         orderStatement.setDate(1, java.sql.Date.valueOf(date));
         orderStatement.setInt(2, customerID);
         orderStatement.executeUpdate();
