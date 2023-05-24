@@ -1,5 +1,7 @@
-package SerialCom;
+// Deze class is voor de communicatie tussen de arduino en de core. Hij implement runnable voor een thread om alle inkomende informatie
+// van de arduino te printen in de console.
 
+package SerialCom;
 import com.fazecast.jSerialComm.*;
 
 import java.io.IOException;
@@ -16,6 +18,7 @@ public class SerialComm implements Runnable{
     private InputStream inputStream;
     private SerialPort serialPort;
 
+    //Openen van connectie.
     public SerialComm(String comPort) {
         serialPort = SerialPort.getCommPort(comPort);
         serialPort.setBaudRate(baudRate);
@@ -30,19 +33,22 @@ public class SerialComm implements Runnable{
 
     }
 
+    //Stuurt de coordinaten naar de arduino.
     public void stuurCoords(int x, int y) {
         isSendingData = true;
-        command = "c " + "(" + x + ", " + y + ")";
+        command = "c " + " " + x + " " + y;
         stuurCommand(command);
 
     }
 
+  //Stuurt een sein voor de noodstop.
     public void noodstop() {
         isSendingData = true;
         command = "n";
         stuurCommand(command);
     }
 
+   //Hiermee kun je de besturing aanpassen, true voor automatisch en false voor handmatig.
     public void besturing(boolean automatisch) {
         isSendingData = true;
         if (automatisch) {
@@ -55,17 +61,19 @@ public class SerialComm implements Runnable{
 
     }
 
+    //private methode die wordt gebruikt door elke stuur methode om de informatie te sturen.
     private void stuurCommand(String command) {
         byte[] bytes = command.getBytes();
         serialPort.writeBytes(bytes, bytes.length);
         isSendingData = false;
     }
 
+    //Voor de thread, checkt constant voor inkomende informatie en print deze.
     public void run() {
         while (true) {
             try {
                 if (!isSendingData && inputStream.available() > 0) {
-                    // Read data from the serial port
+                    // Leest data, buffer grootte kan nog veranderd worden
                     byte[] buffer = new byte[1024];
                     int bytesRead = 0;
                     try {
@@ -74,7 +82,6 @@ public class SerialComm implements Runnable{
                         throw new RuntimeException(e);
                     }
 
-                    // Process the received data
                     String receivedData = new String(buffer, 0, bytesRead);
                     System.out.println("Received data: " + receivedData);
                 }
@@ -82,9 +89,9 @@ public class SerialComm implements Runnable{
                 throw new RuntimeException(e);
             }
 
-            // Sleep for a short duration before checking again
+            // Neemt een kort pauze voordat hij weer checkt.
             try {
-                Thread.sleep(100); // Adjust the delay as needed
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
