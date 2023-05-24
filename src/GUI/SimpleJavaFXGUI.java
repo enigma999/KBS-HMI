@@ -9,7 +9,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
+//BackGUI refereert terug naar de main GUI pagina
+//CreateOrder moet een order maken in de stijl van de database
+//ChangeOrder moet een order updaten naar de nieuwe order
+//ViewOrders moet een lijst geven van niet voltooide orders
+//TSPTest moet laten zien welke tsp oplossing in welk geval beter is en wat de runtime is
+//SaveOrder moet de aangepaste of gecreeerde order opslaan naar de database
+//Setscreen past de pagina grootte aan naar wat wij willen van het scherm.
 
 public class SimpleJavaFXGUI extends Application {
 
