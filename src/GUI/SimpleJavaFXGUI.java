@@ -37,9 +37,11 @@ public class SimpleJavaFXGUI extends Application {
 
 
     public void CreateOrder(MouseEvent mouseEvent) {
+        //hier moet met een method van marit een order de database in gestuurd worden
     }
 
     public void ChangeOrder(MouseEvent mouseEvent) {
+        //hier moet een van de methods van marit een order aangepast kunnen worden.
     }
 
     public void ViewOrders(MouseEvent mouseEvent) throws IOException {
@@ -51,6 +53,7 @@ public class SimpleJavaFXGUI extends Application {
     }
 
     public void SaveOrder(MouseEvent mouseEvent) {
+        //hier moet er een order in de database kunnen worden opgeslagen
     }
 
     private void setScreen(MouseEvent mouseEvent, String page) throws IOException{
