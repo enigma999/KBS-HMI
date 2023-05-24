@@ -22,7 +22,7 @@ public class SimpleJavaFXGUI extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        Parent root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("HomeGUI.fxml"));
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -30,15 +30,12 @@ public class SimpleJavaFXGUI extends Application {
         primaryStage.setMinHeight(400);
     }
 
-    // for the benefit of environments that don't support direct launch
-    // of JavaFX Applications:
-
     public static void main(String[] args) {
         launch(args);
     }
 
     public void BackGUI(MouseEvent mouseEvent) throws IOException {
-        setScreen(mouseEvent,"GUI.fxml");
+        setScreen(mouseEvent,"HomeGUI.fxml");
     }
 
 
