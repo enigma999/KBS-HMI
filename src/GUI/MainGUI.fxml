@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.fxml.FXML?>
+<?import GUI.SimpleJavaFXGUI?>
+<?import GUI.TrafficLightController?>
+
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <VBox>
+            <!-- Include the elements from SimpleJavaFXGUI -->
+            <fx:include source="SimpleJavaFXGUI.java" fx:id="simpleJavaFXGUI" />
+
+            <!-- Include the elements from TrafficLightController -->
+            <fx:include source="TrafficLightController.java" fx:id="trafficLightController" />
+        </VBox>
+    </center>
+</BorderPane>

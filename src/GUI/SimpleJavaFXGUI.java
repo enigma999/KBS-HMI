@@ -7,27 +7,26 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import SerialCom.SerialComm;
+import GUI.Orders;
 
 import java.io.IOException;
-//BackGUI refereert terug naar de main GUI pagina
-//CreateOrder moet een order maken in de stijl van de database
-//ChangeOrder moet een order updaten naar de nieuwe order
-//ViewOrders moet een lijst geven van niet voltooide orders
-//TSPTest moet laten zien welke tsp oplossing in welk geval beter is en wat de runtime is
-//SaveOrder moet de aangepaste of gecreeerde order opslaan naar de database
-//Setscreen past de pagina grootte aan naar wat wij willen van het scherm.
 
 public class SimpleJavaFXGUI extends Application {
+    private Orders orders;
+    private SerialComm serialComm;
+
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-
         Parent root = FXMLLoader.load(getClass().getResource("HomeGUI.fxml"));
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
-        primaryStage.setMinWidth(400);
-        primaryStage.setMinHeight(400);
+        orders = new Orders(); // Create an instance of the Orders class
+        serialComm = new SerialCom.SerialComm("COM1"); // Replace "COM1" with your desired COM port
+        Thread serialThread = new Thread(serialComm);
+        serialThread.start();
     }
 
     public static void main(String[] args) {
@@ -35,32 +34,27 @@ public class SimpleJavaFXGUI extends Application {
     }
 
     public void BackGUI(MouseEvent mouseEvent) throws IOException {
-        setScreen(mouseEvent,"HomeGUI.fxml");
+        setScreen(mouseEvent, "HomeGUI.fxml");
     }
 
-
     public void CreateOrder(MouseEvent mouseEvent) {
-        //hier moet met een method van marit een order de database in gestuurd worden
+        orders.CreateOrder(mouseEvent); // Call the CreateOrder method from the Orders class
     }
 
     public void ChangeOrder(MouseEvent mouseEvent) {
-        //hier moet een van de methods van marit een order aangepast kunnen worden.
+        orders.ChangeOrder(mouseEvent); // Call the ChangeOrder method from the Orders class
     }
 
     public void ViewOrders(MouseEvent mouseEvent) throws IOException {
-        setScreen(mouseEvent,"OrderWeergave.fxml");
-    }
-
-    public void TSPTest(MouseEvent mouseEvent) throws IOException {
-        setScreen(mouseEvent,"TSPTest.fxml");
+        orders.ViewOrders(mouseEvent); // Call the ViewOrders method from the Orders class
     }
 
     public void SaveOrder(MouseEvent mouseEvent) {
-        //hier moet er een order in de database kunnen worden opgeslagen
+        orders.SaveOrder(mouseEvent); // Call the SaveOrder method from the Orders class
     }
 
-    private void setScreen(MouseEvent mouseEvent, String page) throws IOException{
-        Parent root = FXMLLoader.load(getClass().getResource(page));
+    public static void setScreen(MouseEvent mouseEvent, String page) throws IOException {
+        Parent root = FXMLLoader.load(SimpleJavaFXGUI.class.getResource(page));
         Scene scene = new Scene(root);
         Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
         stage.setScene(scene);
