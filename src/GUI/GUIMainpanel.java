@@ -124,7 +124,7 @@ public class GUIMainpanel extends JFrame {
                     System.out.println(coordinaten.getCoordinaten(clickedSquaresArray)); //coordinaten
                     System.out.println(Arrays.toString(coordinaten.getGewicht(clickedSquaresArray))); //gewicht
                     int[] BinPP = coordinaten.getGewicht(clickedSquaresArray);
-                    System.out.println(binpacking.bestFit(BinPP)); //bpp
+                    System.out.println(binpacking.bestFit(BinPP, clickedSquaresArray)); //bpp
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
