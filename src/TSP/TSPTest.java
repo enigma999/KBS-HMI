@@ -6,13 +6,14 @@ import static java.lang.Math.sqrt;
 
 public class TSPTest {
 
-    public AlgValues execTSP(Magazijn magazijn, Algoritme algoritme) {
+    public static AlgValues execTSP(Magazijn magazijn, Algoritme algoritme) {
         AlgValues algValues = new AlgValues();
         final long startTime = System.nanoTime();
         ArrayList<Pakket> path = algoritme.calculatePath(magazijn.getPakketjes());
         final long endTime = System.nanoTime();
         algValues.setTime(endTime-startTime);
         algValues.setDistance(calculatePathLength(path));
+        algValues.setNaam(algoritme.getNaam());
         return algValues;
     }
 
