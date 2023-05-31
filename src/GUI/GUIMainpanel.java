@@ -1,5 +1,4 @@
 package GUI;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,9 +17,7 @@ public class GUIMainpanel extends JFrame {
         setTitle("Drie-panel GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setUndecorated(false);
 
-        // Bovenste Menubalk met stoplicht en 2 knoppen
         JPanel topPanel = new JPanel();
         topPanel.setBackground(Color.WHITE);
         topPanel.setPreferredSize(new Dimension(getWidth(), 50));
@@ -41,9 +38,8 @@ public class GUIMainpanel extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // Linkerpaneel voor de tekst
         JPanel leftPanel = new JPanel();
-        leftPanel.setBackground(new Color(220, 220, 220)); // Lichtgrijs
+        leftPanel.setBackground(new Color(220, 220, 220));
         leftPanel.setPreferredSize(new Dimension(400, getHeight()));
         leftPanel.setLayout(new BorderLayout());
 
@@ -57,9 +53,8 @@ public class GUIMainpanel extends JFrame {
 
         add(leftPanel, BorderLayout.WEST);
 
-        // Rechterpaneel voor de grid
         JPanel rightPanel = new JPanel();
-        rightPanel.setBackground(new Color(220, 220, 220)); // Lichtgrijs
+        rightPanel.setBackground(new Color(220, 220, 220));
         rightPanel.setLayout(new GridLayout(5, 5));
 
         ActionListener squareClickListener = new ActionListener() {
@@ -84,19 +79,15 @@ public class GUIMainpanel extends JFrame {
 
         add(rightPanel, BorderLayout.CENTER);
 
-        // Onderste menubalk met een klop
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(Color.WHITE);
         bottomPanel.setPreferredSize(new Dimension(getWidth(), 50));
 
         JButton saveButton = new JButton("Verstuur");
-
-        // Create the ActionListener for the saveButton
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 clickedSquares.clear();
-
                 Component[] components = rightPanel.getComponents();
                 for (Component component : components) {
                     if (component instanceof JButton) {
@@ -107,17 +98,10 @@ public class GUIMainpanel extends JFrame {
                         }
                     }
                 }
-                int[] clickedSquaresArray = new int[clickedSquares.size()];
-
-                for (int i = 0; i < clickedSquares.size(); i++) {
-                    clickedSquaresArray[i] = clickedSquares.get(i);
-                }
+                int[] clickedSquaresArray = clickedSquares.stream().mapToInt(Integer::intValue).toArray();
                 Stockitems coordinaten = new Stockitems();
                 BPP binpacking = new BPP();
-
                 try {
-                    System.out.println(coordinaten.getCoordinaten(clickedSquaresArray)); //coordinaten
-                    System.out.println(Arrays.toString(coordinaten.getGewicht(clickedSquaresArray))); //gewicht
                     int[] BinPP = coordinaten.getGewicht(clickedSquaresArray);
                     ArrayList<ArrayList<Integer>> result = binpacking.bestFit(BinPP, clickedSquaresArray);
                     displayResult(clickedSquares, result);
@@ -128,9 +112,9 @@ public class GUIMainpanel extends JFrame {
         });
 
         bottomPanel.add(saveButton);
-
         add(bottomPanel, BorderLayout.SOUTH);
 
+        pack();
         setVisible(true);
     }
 
@@ -149,7 +133,6 @@ public class GUIMainpanel extends JFrame {
     }
 
     private void displayResult(ArrayList<Integer> clickedSquares, ArrayList<ArrayList<Integer>> result) {
-        // Convert order numbers to comma-separated string
         StringBuilder orderBuilder = new StringBuilder();
         for (int i = 0; i < clickedSquares.size(); i++) {
             if (i > 0) {
@@ -159,7 +142,6 @@ public class GUIMainpanel extends JFrame {
         }
         String order = orderBuilder.toString();
 
-        // Convert bin contents to comma-separated strings
         StringBuilder binBuilder = new StringBuilder();
         for (int i = 0; i < result.size(); i++) {
             ArrayList<Integer> bin = result.get(i);
@@ -178,7 +160,6 @@ public class GUIMainpanel extends JFrame {
         }
         String bins = binBuilder.toString();
 
-        // Display the order and bin information
         textArea.setText("Order = " + order + "\nBPP = " + bins);
     }
 }
