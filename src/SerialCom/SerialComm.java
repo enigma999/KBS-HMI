@@ -75,6 +75,18 @@ public class SerialComm implements Runnable{
         return coordinaten;
     }
 
+    public void leveren() {
+        isSendingData = true;
+        command = "l";
+        stuurCommand(command);
+    }
+
+    public void pakOp() {
+        isSendingData = true;
+        command = "o";
+        stuurCommand(command);
+    }
+
     //private methode die wordt gebruikt door elke stuur methode om de informatie te sturen.
     private void stuurCommand(String command) {
         byte[] bytes = command.getBytes();
@@ -97,6 +109,9 @@ public class SerialComm implements Runnable{
                     }
 
                     String receivedData = new String(buffer, 0, bytesRead);
+                    if (receivedData.equals("gelukt")) {
+                        //volgende pakktje in main gaat een counter omhoog
+                    }
                     System.out.println("Received data: " + receivedData);
                 }
             } catch (IOException e) {
