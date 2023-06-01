@@ -36,7 +36,6 @@ public class Stockitems extends Connectie {
 
         return results;
     }
-}
 
     public int getGewicht(int stockitemid) throws SQLException {
         if (!this.isConnected())

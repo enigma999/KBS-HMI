@@ -58,7 +58,11 @@ public class GUIOrder extends JFrame {
                 // Add code here to go back to the main GUI screen (GUIMainpanel)
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        new GUIMainpanel(); // Create a new instance of GUIMainpanel
+                        try {
+                            new GUIMainpanel(); // Create a new instance of GUIMainpanel
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
                 });
             }

@@ -20,7 +20,7 @@ public class Connectie {
     public Connectie()
     {
         this.hostname = "localhost";
-        this.port = "8889";
+        this.port = "3306";
         this.username = "root";
         this.password = "";
         this.database = "nerdygadgets";

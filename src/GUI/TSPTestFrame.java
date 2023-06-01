@@ -18,7 +18,7 @@ public class TSPTestFrame extends JFrame {
         bf = TSPTest.execTSP(magazijn, new BruteForce());
         nn = TSPTest.execTSP(magazijn, new NearestNeighbour());
 
-        setTitle("Drie-panel GUI");
+        setTitle("TSP");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
