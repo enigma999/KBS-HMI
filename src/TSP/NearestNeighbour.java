@@ -15,7 +15,7 @@ public class NearestNeighbour implements Algoritme {
             Pakket pakket = getClosest(pakketjes);
             path.add(pakket);
             pakketjes.remove(pakket);
-            afstand+= getAfstand(pakket.getX(), pakket.getY());
+            afstand += getAfstand(pakket.getX(), pakket.getY());
 
             startX = pakket.getX();
             startY = pakket.getY();
@@ -27,37 +27,33 @@ public class NearestNeighbour implements Algoritme {
 
     public String getNaam() {
         return "Nearest Neighbour";
-
-    public String getNaam() {
-        return "Nearest Neighbour";
     }
 
 
+        private static Pakket getClosest (ArrayList < Pakket > pakketjes) {
+            double afstand = 1000000000;
+            Pakket closestPacket = pakketjes.get(0);
 
-    private static Pakket getClosest(ArrayList<Pakket> pakketjes) {
-        double afstand = 1000000000;
-        Pakket closestPacket = pakketjes.get(0);
+            for (int i = 0; i < pakketjes.size(); i++) {
 
-        for (int i = 0; i < pakketjes.size(); i++) {
+                int x = pakketjes.get(i).getX();
+                int y = pakketjes.get(i).getY();
 
-            int x = pakketjes.get(i).getX();
-            int y = pakketjes.get(i).getY();
-
-            if (getAfstand(x,y) < afstand) {
-                closestPacket = pakketjes.get(i);
-                afstand = getAfstand(x,y);
+                if (getAfstand(x, y) < afstand) {
+                    closestPacket = pakketjes.get(i);
+                    afstand = getAfstand(x, y);
+                }
             }
+
+            return closestPacket;
         }
 
-        return closestPacket;
-    }
-
-    private static double getAfstand(int x, int y) {
-        int distanceX = Math.abs(x-startX);
-        int distanceY = Math.abs(y-startY);
-        double afstand = Math.sqrt(Math.pow(distanceX,2) + Math.pow(distanceY,2));
-        return afstand;
-    }
+        private static double getAfstand ( int x, int y){
+            int distanceX = Math.abs(x - startX);
+            int distanceY = Math.abs(y - startY);
+            double afstand = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+            return afstand;
+        }
 
 }
 
