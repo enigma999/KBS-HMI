@@ -1,6 +1,8 @@
 package BPP;
 import java.util.ArrayList;
 
+
+// bestFit() geeft je een int[] mee met de gewichten en een int[] met de stockitems, returnt een arraylist met de stockitemids gesorteerd in bakken: [[x, x, x], [x, x], [x]]
 public class BPP {
     private final int bincapaciteit = 10;
 
