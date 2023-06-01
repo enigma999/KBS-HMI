@@ -5,7 +5,6 @@ public class AlgValues {
     private double distance;
     private String naam;
 
-    private String naam;
 
 
     public long getTime() {
