@@ -48,14 +48,14 @@ public class SerialComm implements Runnable{
 
     }
 
-  //Stuurt een sein voor de noodstop.
+    //Stuurt een sein voor de noodstop.
     public void noodstop() {
         isSendingData = true;
         command = "n";
         stuurCommand(command);
     }
 
-   //Hiermee kun je de besturing aanpassen, true voor automatisch en false voor handmatig.
+    //Hiermee kun je de besturing aanpassen, true voor automatisch en false voor handmatig.
     public void besturing(boolean automatisch) {
         isSendingData = true;
         if (automatisch) {
@@ -98,6 +98,13 @@ public class SerialComm implements Runnable{
         return sendNext;
     }
 
+    public int getIterator() {
+        return iterator;
+    }
+
+    public void setIterator(int iterator) {
+        this.iterator = iterator;
+    }
 
     //private methode die wordt gebruikt door elke stuur methode om de informatie te sturen.
     private void stuurCommand(String command) {
@@ -123,7 +130,9 @@ public class SerialComm implements Runnable{
                     String data = new String(buffer, 0, bytesRead);
                     String receivedData = data.trim();
                     if (receivedData.equals("Gelukt")) {
+                        System.out.println("gelukt");
                         sendNext = true;
+                        iterator++;
                     }
 //                    System.out.println("Received data: " + receivedData);
                 }

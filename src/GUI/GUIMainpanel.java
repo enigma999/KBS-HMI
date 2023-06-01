@@ -16,10 +16,10 @@ public class GUIMainpanel extends JFrame implements Runnable{
     private ArrayList<Integer> clickedSquares = new ArrayList<>();
     private JTextArea textArea;
     private SerialComm communicatie;
-    private boolean coords = false;
+    private boolean sturen = false;
 
     public GUIMainpanel() throws SQLException {
-        communicatie = new SerialComm("COM7");
+        communicatie = new SerialComm("COM6");
         Thread thread = new Thread(communicatie);
         thread.start();
         new Thread(this).start();
@@ -46,14 +46,33 @@ public class GUIMainpanel extends JFrame implements Runnable{
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Perform the TSP test action here
-                // Add your code logic for the TSP test
-                // You can call any methods or perform any actions you need
 
-                // Example:
+            }
+        });
+
+        // Noodstop
+        redButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                communicatie.noodstop();
+                sturen = false;
+            }
+        });
+// Manual
+        yellowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                communicatie.besturing(false);
+            }
+        });
+// Automatisch
+        greenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 communicatie.besturing(true);
             }
         });
+
         JButton button2 = createButton("Orders");
 
         topPanel.add(button1);
@@ -140,7 +159,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
 //                        communicatie.stuurCoords(x, y);
 //                    }
 //                    new Scanner(System.in).nextLine();
-                    coords = true;
+                    sturen = true;
                     displayResult(clickedSquares, result);
 
                 } catch (SQLException ex) {
@@ -226,10 +245,10 @@ public class GUIMainpanel extends JFrame implements Runnable{
 
         while (true) {
 
-            if (coords) {
-                System.out.println(i);
-                int drietal = (i) % 3;
-                boolean lossen = drietal ==0 && i!=0;
+            if (sturen) {
+                int drietal = (communicatie.getIterator()) % 3;
+                boolean lossen = drietal ==0 && communicatie.getIterator()!=0;
+                System.out.println(communicatie.getIterator());
                 if (lossen) {
                     communicatie.leveren();
                 }
