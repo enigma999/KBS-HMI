@@ -3,10 +3,14 @@
 
 package SerialCom;
 import com.fazecast.jSerialComm.*;
+import database.Connectie;
+import database.Stockitems;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SerialComm implements Runnable{
@@ -61,6 +65,28 @@ public class SerialComm implements Runnable{
 
     }
 
+    public ArrayList<Integer> getCoords(int stockID) throws SQLException {
+        ArrayList<Integer> coordinaten = new ArrayList<>();
+        Stockitems connectie = new Stockitems();
+        for (String coord : connectie.getCoordinaten(stockID)) {
+            Integer coordinaat = Integer.parseInt(coord);
+            coordinaten.add(coordinaat);
+        }
+        return coordinaten;
+    }
+
+    public void leveren() {
+        isSendingData = true;
+        command = "l";
+        stuurCommand(command);
+    }
+
+    public void pakOp() {
+        isSendingData = true;
+        command = "o";
+        stuurCommand(command);
+    }
+
     //private methode die wordt gebruikt door elke stuur methode om de informatie te sturen.
     private void stuurCommand(String command) {
         byte[] bytes = command.getBytes();
@@ -83,6 +109,9 @@ public class SerialComm implements Runnable{
                     }
 
                     String receivedData = new String(buffer, 0, bytesRead);
+                    if (receivedData.equals("gelukt")) {
+                        //volgende pakktje in main gaat een counter omhoog
+                    }
                     System.out.println("Received data: " + receivedData);
                 }
             } catch (IOException e) {
