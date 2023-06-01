@@ -2,6 +2,7 @@
 // van de arduino te printen in de console.
 
 package SerialCom;
+import GUI.GUIMainpanel;
 import com.fazecast.jSerialComm.*;
 import database.Connectie;
 import database.Stockitems;
@@ -15,6 +16,8 @@ import java.util.Scanner;
 
 public class SerialComm implements Runnable{
     private int baudRate = 9600;
+    private boolean sendNext = true;
+    private int iterator = 0;
     private OutputStream outputStream;
     private Scanner scanner = new Scanner(System.in);
     private String command;
@@ -40,7 +43,7 @@ public class SerialComm implements Runnable{
     //Stuurt de coordinaten naar de arduino.
     public void stuurCoords(int x, int y) {
         isSendingData = true;
-        command = "c " + " " + x + " " + y;
+        command = "c " + x + " " + y;
         stuurCommand(command);
 
     }
@@ -88,6 +91,13 @@ public class SerialComm implements Runnable{
         stuurCommand(command);
     }
 
+    public void setSendNext(boolean sendNext) {
+        this.sendNext = sendNext;
+    }
+    public boolean getSendNext() {
+        return sendNext;
+    }
+
 
     //private methode die wordt gebruikt door elke stuur methode om de informatie te sturen.
     private void stuurCommand(String command) {
@@ -110,11 +120,12 @@ public class SerialComm implements Runnable{
                         throw new RuntimeException(e);
                     }
 
-                    String receivedData = new String(buffer, 0, bytesRead);
-                    if (receivedData.equals("gelukt")) {
-                        //volgende pakktje in main gaat een counter omhoog
+                    String data = new String(buffer, 0, bytesRead);
+                    String receivedData = data.trim();
+                    if (receivedData.equals("Gelukt")) {
+                        sendNext = true;
                     }
-                    System.out.println("Received data: " + receivedData);
+//                    System.out.println("Received data: " + receivedData);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
