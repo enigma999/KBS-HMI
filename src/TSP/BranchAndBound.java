@@ -188,5 +188,4 @@ public class BranchAndBound implements Algoritme{
 
 
 
-
 }

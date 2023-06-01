@@ -22,6 +22,7 @@ public class BruteForce implements Algoritme {
         return sortedPakketjes;
     }
 
+
     public String getNaam() {
         return "BruteForce";
     }

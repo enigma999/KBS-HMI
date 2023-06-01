@@ -28,6 +28,7 @@ public class NearestNeighbour implements Algoritme {
         return "Nearest Neighbour";
     }
 
+
     private static Pakket getClosest(ArrayList<Pakket> pakketjes) {
         double afstand = 1000000000;
         Pakket closestPacket = pakketjes.get(0);

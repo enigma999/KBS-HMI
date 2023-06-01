@@ -28,4 +28,5 @@ public class AlgValues {
     public void setNaam(String naam) {
         this.naam = naam;
     }
+
 }
