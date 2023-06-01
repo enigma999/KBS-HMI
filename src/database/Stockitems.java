@@ -23,7 +23,6 @@ public class Stockitems extends Connectie {
         }
         return intCoordinates;
     }
-
     public ArrayList<int[]> getCoordinaten(int[] stockitemid) throws SQLException {
         if (!this.isConnected())
             this.connect();
