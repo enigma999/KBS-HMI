@@ -37,6 +37,27 @@ public class GUIMainpanel extends JFrame implements Runnable{
         JButton redButton = createColorButton(Color.RED);
         JButton yellowButton = createColorButton(Color.YELLOW);
         JButton greenButton = createColorButton(Color.GREEN);
+// Noodstop
+        redButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                communicatie.noodstop();
+            }
+        });
+// Manual
+        yellowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                communicatie.besturing(false);
+            }
+        });
+// Automatisch
+        greenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                communicatie.besturing(true);
+            }
+        });
 
         topPanel.add(redButton);
         topPanel.add(yellowButton);
@@ -133,7 +154,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
                     int[] BinPP = coordinaten.getGewicht(clickedSquaresArray);
                     ArrayList<ArrayList<Integer>> result = binpacking.bestFit(BinPP, clickedSquaresArray);
                     // Coordinaten sturen
-                    ArrayList<ArrayList<String>> coord = coordinaten.getCoordinaten(clickedSquaresArray);
+//                    ArrayList<ArrayList<String>> coord = coordinaten.getCoordinaten(clickedSquaresArray);
 //                    for (ArrayList<String> coordinate : coord) {
 //                        int x = Integer.parseInt(coordinate.get(0));
 //                        int y = Integer.parseInt(coordinate.get(1));
