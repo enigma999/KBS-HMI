@@ -79,14 +79,13 @@ public class Order extends Connectie {
         return orderInfo;
     }
 
-
     public ArrayList<String> getCustomerInfo(int orderid) throws SQLException {
         if (!this.isConnected())
             this.connect();
 
         ArrayList<ArrayList<String>> result = queryResult("select CustomerID from ordertabel where OrderID = " + orderid);
         String customerId = result.get(0).get(0);
-        ArrayList<ArrayList<String>> result2 = queryResult("select CustomerName, Address from customer where CustomerID = " + customerId);
+        ArrayList<ArrayList<String>> result2 = queryResult("select CustomerName from customer where CustomerID = " + customerId);
         return result2.get(0);
     }
 
@@ -110,7 +109,7 @@ public class Order extends Connectie {
         String[] orderDateArray = getOrderDate(orderid);
 
         System.out.println("OrderID en Datum: [" + orderid + ", " + orderDateArray[1] + "]");
-        System.out.println("Klant en Adres: " + customerInfo);
+        System.out.println("Klant: " + customerInfo);
         System.out.println("Producten, Aantal en Prijs: " + orderInfo);
     }
 
@@ -139,7 +138,7 @@ public class Order extends Connectie {
         statement.close();
     }
 
-    public void updateOrder(int orderID, String name, String address, int[] quantities, int[] prices) throws SQLException{
+    public void updateOrder(int orderID, int[] quantities) throws SQLException {
 
         if (!this.isConnected())
             this.connect();
@@ -160,36 +159,17 @@ public class Order extends Connectie {
             statement.executeUpdate();
             statement.close();
         }
+    }
 
-        PreparedStatement orderStatement = connection.prepareStatement("UPDATE ordertabel SET Address = ? WHERE OrderID = ?");
-        orderStatement.setString(1, address);
-        orderStatement.setInt(2, orderID);
+    private void insertOrderTable(int orderID, LocalDate date, int customerID) throws SQLException {
+        PreparedStatement orderStatement = connection.prepareStatement("INSERT INTO ordertabel (OrderID, OrderDate, Picked, CustomerID) VALUES (?, ?, 0, ?)");
+        orderStatement.setInt(1, orderID);
+        orderStatement.setDate(2, java.sql.Date.valueOf(date));
+        orderStatement.setInt(3, customerID);
         orderStatement.executeUpdate();
-        orderStatement.close();
     }
 
 
-    public void insertOrder(int[] stockitemIDs, int[] quantities) throws SQLException {
-        if (!this.isConnected())
-            this.connect();
-
-        String customerName = "Manual";
-        LocalDate date = LocalDate.now();
-
-        int customerID = findCustomerID(customerName);
-        int newOrderID = insertOrder(date, customerID);
-
-        for (int i = 0; i < stockitemIDs.length; i++) {
-            int stockitemID = stockitemIDs[i];
-            int quantity = quantities[i];
-
-            ArrayList<String> stockitemInfo = getInfoStockitem(stockitemID);
-            String stockitemName = stockitemInfo.get(0);
-            double unitPrice = Double.parseDouble(stockitemInfo.get(1));
-
-            insertOrderLine(newOrderID, stockitemID, stockitemName, quantity, unitPrice);
-        }
-    }
 
     public boolean orderExists(int orderID) throws SQLException {
         if (!this.isConnected())
@@ -210,30 +190,26 @@ public class Order extends Connectie {
         return result.get(0);
     }
 
-    private int findCustomerID(String customerName) throws SQLException {
-        PreparedStatement customerStatement = connection.prepareStatement("SELECT CustomerID FROM customer WHERE CustomerName = ?");
-        customerStatement.setString(1, customerName);
-        ResultSet customerResult = customerStatement.executeQuery();
+    public int insertOrder(LocalDate date, int[] stockitemIDs, int[] quantities, int customerID) throws SQLException {
+        if (!this.isConnected())
+            this.connect();
 
-        if (customerResult.next()) {
-            return customerResult.getInt("CustomerID");
-        } else {
-            throw new RuntimeException("Customer not found for name: " + customerName);
-        }
-    }
+        int newOrderID = getNextOrderID();
 
-    private int insertOrder(LocalDate date, int customerID) throws SQLException {
-        PreparedStatement orderStatement = connection.prepareStatement("INSERT INTO ordertabel (orderdate, picked, customerid) VALUES (?, 0, ?)", Statement.RETURN_GENERATED_KEYS);
-        orderStatement.setDate(1, java.sql.Date.valueOf(date));
-        orderStatement.setInt(2, customerID);
-        orderStatement.executeUpdate();
+        for (int i = 0; i < stockitemIDs.length; i++) {
+            int stockitemID = stockitemIDs[i];
+            int quantity = quantities[i];
 
-        ResultSet generatedKeys = orderStatement.getGeneratedKeys();
-        if (generatedKeys.next()) {
-            return generatedKeys.getInt(1);
+            ArrayList<String> stockitemInfo = getInfoStockitem(stockitemID);
+            String stockitemName = stockitemInfo.get(0);
+            double unitPrice = Double.parseDouble(stockitemInfo.get(1));
+
+            insertOrderLine(newOrderID, stockitemID, stockitemName, quantity, unitPrice);
         }
 
-        throw new SQLException("Failed to retrieve new order ID.");
+        insertOrderTable(newOrderID, date, customerID);
+
+        return newOrderID;
     }
 
     private void insertOrderLine(int orderID, int stockitemID, String description, int quantity, double unitPrice) throws SQLException {

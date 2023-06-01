@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class GUI extends JFrame {
@@ -84,7 +85,7 @@ public class GUI extends JFrame {
         setVisible(true);
     }
 
-    private void displayOrders(JTextArea ordersTextArea, ArrayList<ArrayList<String>> orders) {
+    public void displayOrders(JTextArea ordersTextArea, ArrayList<ArrayList<String>> orders) {
         StringBuilder sb = new StringBuilder();
         for (ArrayList<String> order : orders) {
             sb.append("Order ID: ").append(order.get(0)).append("\n");
@@ -96,7 +97,7 @@ public class GUI extends JFrame {
         ordersTextArea.setText(sb.toString());
     }
 
-    private void openOrderAdjustmentScreen() {
+    public void openOrderAdjustmentScreen() {
         String orderIDText = JOptionPane.showInputDialog("Enter Order ID:");
         if (orderIDText != null && !orderIDText.isEmpty()) {
             try {
@@ -114,9 +115,6 @@ public class GUI extends JFrame {
                     JLabel orderIDLabel = new JLabel("Order ID:");
                     JTextField orderIDField = new JTextField();
 
-                    JLabel addressLabel = new JLabel("Address:");
-                    JTextField addressField = new JTextField();
-
                     JLabel stockitemLabel = new JLabel("Stock Item IDs:");
                     JTextField stockitemField = new JTextField();
 
@@ -126,11 +124,10 @@ public class GUI extends JFrame {
                     JButton saveChangesButton = new JButton("Save Changes");
                     saveChangesButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
-                            String address = addressField.getText();
                             String stockitemText = stockitemField.getText();
                             String quantityText = quantityField.getText();
 
-                            if (address.isEmpty() || stockitemText.isEmpty() || quantityText.isEmpty()) {
+                            if (stockitemText.isEmpty() || quantityText.isEmpty()) {
                                 JOptionPane.showMessageDialog(adjustmentFrame, "Please fill in all fields.", "Incomplete Data", JOptionPane.WARNING_MESSAGE);
                             } else {
                                 try {
@@ -151,7 +148,7 @@ public class GUI extends JFrame {
 
                                         // Update the order in the database
                                         try {
-                                            order.updateOrder(orderID, name, address, quantities);
+                                            order.updateOrder(orderID, quantities);
                                             JOptionPane.showMessageDialog(adjustmentFrame, "Order updated successfully.", "Order Updated", JOptionPane.INFORMATION_MESSAGE);
 
                                             // Refresh the orders display
@@ -179,8 +176,6 @@ public class GUI extends JFrame {
 
                     contentPanel.add(orderIDLabel);
                     contentPanel.add(orderIDField);
-                    contentPanel.add(addressLabel);
-                    contentPanel.add(addressField);
                     contentPanel.add(stockitemLabel);
                     contentPanel.add(stockitemField);
                     contentPanel.add(quantityLabel);
@@ -191,7 +186,6 @@ public class GUI extends JFrame {
                     ArrayList<ArrayList<String>> orderInfo = order.getOrderInfo(orderID);
                     if (orderInfo != null) {
                         orderIDField.setText(orderIDText);
-                        addressField.setText(orderInfo.get(0).get(0));
 
                         int[] orderStockIDs = order.getOrderStockID(orderID);
                         StringBuilder stockitemsBuilder = new StringBuilder();
@@ -223,7 +217,7 @@ public class GUI extends JFrame {
         }
     }
 
-    private void openOrderCreationScreen() {
+    public void openOrderCreationScreen() {
         JFrame creationFrame = new JFrame("Create Order");
         creationFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         creationFrame.setLayout(new BorderLayout());
@@ -232,8 +226,8 @@ public class GUI extends JFrame {
         contentPanel.setLayout(new GridLayout(6, 2, 10, 10));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel addressLabel = new JLabel("Address:");
-        JTextField addressField = new JTextField();
+        JLabel customerIDLabel = new JLabel("Customer ID:");
+        JTextField customerIDField = new JTextField();
 
         JLabel stockitemLabel = new JLabel("Stock Item IDs:");
         JTextField stockitemField = new JTextField();
@@ -244,14 +238,16 @@ public class GUI extends JFrame {
         JButton completeButton = new JButton("Complete");
         completeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String address = addressField.getText();
+                String customerIDText = customerIDField.getText();
                 String stockitemText = stockitemField.getText();
                 String quantityText = quantityField.getText();
 
-                if (address.isEmpty() || stockitemText.isEmpty() || quantityText.isEmpty()) {
+                if (customerIDText.isEmpty() || stockitemText.isEmpty() || quantityText.isEmpty()) {
                     JOptionPane.showMessageDialog(creationFrame, "Please fill in all fields.", "Incomplete Data", JOptionPane.WARNING_MESSAGE);
                 } else {
                     try {
+                        int customerID = Integer.parseInt(customerIDText);
+
                         // Split stock item IDs and quantities
                         String[] stockitemArray = stockitemText.split(",");
                         String[] quantityArray = quantityText.split(",");
@@ -268,7 +264,8 @@ public class GUI extends JFrame {
                             }
 
                             try {
-                                order.insertOrder(orderID, name, address, quantities);
+                                // Insert the order into the database
+                                order.insertOrder(LocalDate.now(), stockitemIDs, quantities, customerID);
 
                                 JOptionPane.showMessageDialog(creationFrame, "Order created successfully.", "Order Created", JOptionPane.INFORMATION_MESSAGE);
 
@@ -282,7 +279,7 @@ public class GUI extends JFrame {
                                 }
 
                                 // Clear the input fields
-                                addressField.setText("");
+                                customerIDField.setText("");
                                 stockitemField.setText("");
                                 quantityField.setText("");
 
@@ -291,17 +288,19 @@ public class GUI extends JFrame {
                             } catch (SQLException ex) {
                                 ex.printStackTrace();
                                 JOptionPane.showMessageDialog(creationFrame, "Failed to insert the order into the database.", "Database Error", JOptionPane.ERROR_MESSAGE);
+                            } catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(creationFrame, "Invalid customer ID or quantity. Please enter numeric values.", "Invalid Data", JOptionPane.ERROR_MESSAGE);
                             }
                         }
                     } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(creationFrame, "Invalid quantity. Please enter numeric values.", "Invalid Data", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(creationFrame, "Invalid customer ID. Please enter a numeric value.", "Invalid Data", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
         });
 
-        contentPanel.add(addressLabel);
-        contentPanel.add(addressField);
+        contentPanel.add(customerIDLabel);
+        contentPanel.add(customerIDField);
         contentPanel.add(stockitemLabel);
         contentPanel.add(stockitemField);
         contentPanel.add(quantityLabel);
@@ -314,6 +313,8 @@ public class GUI extends JFrame {
         creationFrame.setLocationRelativeTo(this);
         creationFrame.setVisible(true);
     }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
