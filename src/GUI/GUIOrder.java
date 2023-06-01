@@ -11,12 +11,12 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class GUI extends JFrame {
+public class GUIOrder extends JFrame {
     private Order order;
     private Stockitems stockitems;
     private JTextArea ordersTextArea;
 
-    public GUI() {
+    public GUIOrder() {
         setTitle("Orders");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -206,13 +206,13 @@ public class GUI extends JFrame {
 
                     adjustmentFrame.add(contentPanel, BorderLayout.CENTER);
                     adjustmentFrame.pack();
-                    adjustmentFrame.setLocationRelativeTo(GUI.this);
+                    adjustmentFrame.setLocationRelativeTo(GUIOrder.this);
                     adjustmentFrame.setVisible(true);
                 } else {
-                    JOptionPane.showMessageDialog(GUI.this, "Order not found.", "Order Not Found", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(GUIOrder.this, "Order not found.", "Order Not Found", JOptionPane.WARNING_MESSAGE);
                 }
             } catch (NumberFormatException | SQLException ex) {
-                JOptionPane.showMessageDialog(GUI.this, "Invalid Order ID.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(GUIOrder.this, "Invalid Order ID.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -319,7 +319,7 @@ public class GUI extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new GUI();
+                new GUIOrder();
             }
         });
     }
