@@ -106,7 +106,7 @@ public class GUIMainpanel extends JFrame {
                 int[] clickedSquaresArray = clickedSquares.stream().mapToInt(Integer::intValue).toArray();
                 Stockitems coordinaten = new Stockitems();
                 BPP binpacking = new BPP();
-//                SerialComm communicatie = new SerialComm(??);
+//todo          SerialComm communicatie = new SerialComm(??);
                 try {
                     // BinPacking
                     int[] BinPP = coordinaten.getGewicht(clickedSquaresArray);
@@ -116,7 +116,7 @@ public class GUIMainpanel extends JFrame {
                     for (ArrayList<String> coordinate : coord) {
                         int x = Integer.parseInt(coordinate.get(0));
                         int y = Integer.parseInt(coordinate.get(1));
-//                        communicatie.stuurCoords(x, y);
+//todo                   communicatie.stuurCoords(x, y);
                     }
 
                     displayResult(clickedSquares, result);
@@ -135,7 +135,6 @@ public class GUIMainpanel extends JFrame {
 
     private JButton createColorButton(Color color) {
         JButton button = new JButton();
-        button.setPreferredSize(new Dimension(20, 20));
         button.setBackground(color);
         button.setBorderPainted(false);
         button.setOpaque(true);
