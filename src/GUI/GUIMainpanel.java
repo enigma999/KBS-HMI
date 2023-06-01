@@ -1,18 +1,30 @@
 package GUI;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Scanner;
 
-public class GUIMainpanel extends JFrame {
+import BPP.BPP;
+import database.Stockitems;
+import SerialCom.SerialComm;
+
+public class GUIMainpanel extends JFrame implements Runnable{
     private ArrayList<Integer> clickedSquares = new ArrayList<>();
     private JTextArea textArea;
+    private SerialComm communicatie;
+    private boolean coords = false;
 
-    public GUIMainpanel() {
+    public GUIMainpanel() throws SQLException {
+        communicatie = new SerialComm("COM7");
+        Thread thread = new Thread(communicatie);
+        thread.start();
+        new Thread(this).start();
+
+
         setTitle("Drie-panel GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -31,18 +43,18 @@ public class GUIMainpanel extends JFrame {
         topPanel.add(greenButton);
 
         JButton button1 = createButton("TSP Test");
-        JButton button2 = createButton("Orders");
-        button2.addActionListener(new ActionListener() {
+        button1.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                dispose(); // Close the current GUIMainpanel screen
+                // Perform the TSP test action here
+                // Add your code logic for the TSP test
+                // You can call any methods or perform any actions you need
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        new GUIOrder();
-                    }
-                });
+                // Example:
+                communicatie.besturing(true);
             }
         });
+        JButton button2 = createButton("Orders");
 
         topPanel.add(button1);
         topPanel.add(button2);
@@ -76,6 +88,7 @@ public class GUIMainpanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JButton square = (JButton) e.getSource();
+
                 if (clickCount < 3) {
                     square.setBackground(Color.GRAY);
                     square.setPreferredSize(new Dimension(10, 10));
@@ -113,9 +126,26 @@ public class GUIMainpanel extends JFrame {
                     }
                 }
                 int[] clickedSquaresArray = clickedSquares.stream().mapToInt(Integer::intValue).toArray();
-                // Perform your desired actions with the clicked squares here
-                // ...
-                displayResult(clickedSquares);
+                Stockitems coordinaten = new Stockitems();
+                BPP binpacking = new BPP();
+                try {
+                    // BinPacking
+                    int[] BinPP = coordinaten.getGewicht(clickedSquaresArray);
+                    ArrayList<ArrayList<Integer>> result = binpacking.bestFit(BinPP, clickedSquaresArray);
+                    // Coordinaten sturen
+                    ArrayList<ArrayList<String>> coord = coordinaten.getCoordinaten(clickedSquaresArray);
+//                    for (ArrayList<String> coordinate : coord) {
+//                        int x = Integer.parseInt(coordinate.get(0));
+//                        int y = Integer.parseInt(coordinate.get(1));
+//                        communicatie.stuurCoords(x, y);
+//                    }
+//                    new Scanner(System.in).nextLine();
+                    coords = true;
+                    displayResult(clickedSquares, result);
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -125,6 +155,7 @@ public class GUIMainpanel extends JFrame {
         pack();
         setVisible(true);
     }
+
 
     private JButton createColorButton(Color color) {
         JButton button = new JButton();
@@ -139,23 +170,84 @@ public class GUIMainpanel extends JFrame {
         return button;
     }
 
-    private void displayResult(ArrayList<Integer> clickedSquares) {
-        StringBuilder builder = new StringBuilder();
+    private void displayResult(ArrayList<Integer> clickedSquares, ArrayList<ArrayList<Integer>> result) {
+        StringBuilder orderBuilder = new StringBuilder();
         for (int i = 0; i < clickedSquares.size(); i++) {
             if (i > 0) {
-                builder.append(", ");
+                orderBuilder.append(", ");
             }
-            builder.append(clickedSquares.get(i));
+            orderBuilder.append(clickedSquares.get(i));
         }
-        String result = builder.toString();
-        textArea.setText("Clicked Squares: " + result);
+        String order = orderBuilder.toString();
+
+        StringBuilder binBuilder = new StringBuilder();
+        for (int i = 0; i < result.size(); i++) {
+            ArrayList<Integer> bin = result.get(i);
+            StringBuilder binContents = new StringBuilder();
+            for (int j = 0; j < bin.size(); j++) {
+                if (j > 0) {
+                    binContents.append(", ");
+                }
+                binContents.append(bin.get(j));
+            }
+            String binString = "Bin " + (i + 1) + ": " + binContents.toString();
+            binBuilder.append(binString);
+            if (i < result.size() - 1) {
+                binBuilder.append(", ");
+            }
+        }
+        String bins = binBuilder.toString();
+
+        textArea.setText("Order = " + order + "\nBPP = " + bins);
     }
 
+
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new GUIMainpanel();
+        try {
+            new GUIMainpanel();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void run() {
+        ArrayList<int[]> arrayList = new ArrayList<>();
+        int i = 0;
+        int[] array1 = {1, 2};
+        int[] array2 = {3, 3};
+        int[] array3 = {2, 4};
+        int[] array4 = {4,0};
+
+        arrayList.add(array1);
+        arrayList.add(array2);
+        arrayList.add(array3);
+
+        while (true) {
+
+            if (coords) {
+                System.out.println(i);
+                int drietal = (i) % 3;
+                boolean lossen = drietal ==0 && i!=0;
+                if (lossen) {
+                    communicatie.leveren();
+                }
+                if (communicatie.getSendNext() && !lossen) {
+                    communicatie.setSendNext(false);
+                    int[] coordinaten = arrayList.get(i);
+                    communicatie.stuurCoords(coordinaten[0], coordinaten[1]);
+                    i++;
+                }
+
             }
-        });
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 }
