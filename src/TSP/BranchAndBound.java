@@ -46,6 +46,7 @@ public class BranchAndBound implements Algoritme{
     }
 
 
+
     public String getNaam() {
         return "BranchAndBound";
     }

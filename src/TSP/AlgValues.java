@@ -3,6 +3,7 @@ package TSP;
 public class AlgValues {
     private long time;
     private double distance;
+    private String naam;
 
     private String naam;
 

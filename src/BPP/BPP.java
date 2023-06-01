@@ -1,12 +1,12 @@
 package BPP;
 import java.util.ArrayList;
 
-// bestFit() geeft je een int[] mee met de gewichten, returnt een arraylist met de gewichten gesorteerd in bakken: [[x, x, x], [x, x], [x]]
 
+// bestFit() geeft je een int[] mee met de gewichten en een int[] met de stockitems, returnt een arraylist met de stockitemids gesorteerd in bakken: [[x, x, x], [x, x], [x]]
 public class BPP {
     private final int bincapaciteit = 10;
 
-    public ArrayList<ArrayList<Integer>> bestFit(int[] gewicht) {
+    public ArrayList<ArrayList<Integer>> bestFit(int[] gewicht, int[] stockitems) {
         int aantalItems = gewicht.length;
         int aantalBakken = 0;
         int[] resterendeRuimte = new int[aantalItems];
@@ -18,11 +18,11 @@ public class BPP {
                 resterendeRuimte[aantalBakken] = bincapaciteit - gewicht[i];
                 aantalBakken++;
                 ArrayList<Integer> nieuwBak = new ArrayList<>();
-                nieuwBak.add(gewicht[i]);
+                nieuwBak.add(stockitems[i]);
                 binInhoud.add(nieuwBak);
             } else {
                 resterendeRuimte[besteBakIndex] -= gewicht[i];
-                binInhoud.get(besteBakIndex).add(gewicht[i]);
+                binInhoud.get(besteBakIndex).add(stockitems[i]);
             }
         }
 
