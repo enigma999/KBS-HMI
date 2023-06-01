@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import BPP.BPP;
 import database.Stockitems;
+import SerialCom.SerialComm;
 
 public class GUIMainpanel extends JFrame {
     private ArrayList<Integer> clickedSquares = new ArrayList<>();
@@ -18,6 +19,7 @@ public class GUIMainpanel extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+        // Bovenste Menubalk
         JPanel topPanel = new JPanel();
         topPanel.setBackground(Color.WHITE);
         topPanel.setPreferredSize(new Dimension(getWidth(), 50));
@@ -38,6 +40,7 @@ public class GUIMainpanel extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
+        // Linkerpanel voor tekst
         JPanel leftPanel = new JPanel();
         leftPanel.setBackground(new Color(220, 220, 220));
         leftPanel.setPreferredSize(new Dimension(400, getHeight()));
@@ -53,6 +56,7 @@ public class GUIMainpanel extends JFrame {
 
         add(leftPanel, BorderLayout.WEST);
 
+        // Rechterpanel met de grid
         JPanel rightPanel = new JPanel();
         rightPanel.setBackground(new Color(220, 220, 220));
         rightPanel.setLayout(new GridLayout(5, 5));
@@ -65,6 +69,7 @@ public class GUIMainpanel extends JFrame {
                 JButton square = (JButton) e.getSource();
                 if (clickCount < 3) {
                     square.setBackground(Color.GRAY);
+                    square.setPreferredSize(new Dimension(10, 10));
                     clickCount++;
                 }
             }
@@ -101,9 +106,19 @@ public class GUIMainpanel extends JFrame {
                 int[] clickedSquaresArray = clickedSquares.stream().mapToInt(Integer::intValue).toArray();
                 Stockitems coordinaten = new Stockitems();
                 BPP binpacking = new BPP();
+//                SerialComm communicatie = new SerialComm(??);
                 try {
+                    // BinPacking
                     int[] BinPP = coordinaten.getGewicht(clickedSquaresArray);
                     ArrayList<ArrayList<Integer>> result = binpacking.bestFit(BinPP, clickedSquaresArray);
+                    // Coordinaten sturen
+                    ArrayList<ArrayList<String>> coord = coordinaten.getCoordinaten(clickedSquaresArray);
+                    for (ArrayList<String> coordinate : coord) {
+                        int x = Integer.parseInt(coordinate.get(0));
+                        int y = Integer.parseInt(coordinate.get(1));
+//                        communicatie.stuurCoords(x, y);
+                    }
+
                     displayResult(clickedSquares, result);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
