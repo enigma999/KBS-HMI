@@ -12,25 +12,32 @@ import java.util.Random;
 // InsertOrder(), input is een int[] van stockitemids en een int[] van quantities, geen output
 
 public class Stockitems extends Connectie {
-    public ArrayList<String> getCoordinaten(int stockitemid) throws SQLException {
+    public int[] getCoordinaten(int stockitemid) throws SQLException {
         if (!this.isConnected())
             this.connect();
         ArrayList<ArrayList<String>> result = queryResult("select x, y from stockitemholding where StockItemID = " + stockitemid);
-        return (result.get(0));
+        ArrayList<String> coordinates = result.get(0);
+        int[] intCoordinates = new int[coordinates.size()];
+        for (int i = 0; i < coordinates.size(); i++) {
+            intCoordinates[i] = Integer.parseInt(coordinates.get(i));
+        }
+        return intCoordinates;
     }
 
-    public ArrayList<ArrayList<String>> getCoordinaten(int[] stockitemid) throws SQLException {
+    public ArrayList<int[]> getCoordinaten(int[] stockitemid) throws SQLException {
         if (!this.isConnected())
             this.connect();
 
-        ArrayList<ArrayList<String>> results = new ArrayList<>();
+        ArrayList<int[]> results = new ArrayList<>();
 
         for (int i = 0; i < stockitemid.length; i++) {
-            results.add(getCoordinaten(stockitemid[i]));
+            int[] coordinates = getCoordinaten(stockitemid[i]);
+            results.add(coordinates);
         }
 
         return results;
     }
+}
 
     public int getGewicht(int stockitemid) throws SQLException {
         if (!this.isConnected())
