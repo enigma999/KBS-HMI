@@ -3,7 +3,9 @@ package TSP;
 public class AlgValues {
     private long time;
     private double distance;
+
     private String naam;
+
 
     public long getTime() {
         return time;
@@ -21,6 +23,7 @@ public class AlgValues {
         this.distance = distance;
     }
 
+
     public String getNaam() {
         return naam;
     }
@@ -28,4 +31,5 @@ public class AlgValues {
     public void setNaam(String naam) {
         this.naam = naam;
     }
+
 }

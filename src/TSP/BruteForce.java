@@ -22,9 +22,11 @@ public class BruteForce implements Algoritme {
         return sortedPakketjes;
     }
 
+
     public String getNaam() {
         return "BruteForce";
     }
+
 
     private static void generatePermutationsHelper(ArrayList<Pakket> pakketjes, int[] path, boolean[] used, int index, int n) {
         if (index == n) {
