@@ -1,20 +1,18 @@
 package GUI;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import BPP.BPP;
-import database.Stockitems;
-import SerialCom.SerialComm;
 
 public class GUIMainpanel extends JFrame {
     private ArrayList<Integer> clickedSquares = new ArrayList<>();
     private JTextArea textArea;
 
-    public GUIMainpanel() throws SQLException {
+    public GUIMainpanel() {
         setTitle("Drie-panel GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -34,6 +32,17 @@ public class GUIMainpanel extends JFrame {
 
         JButton button1 = createButton("TSP Test");
         JButton button2 = createButton("Orders");
+        button2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Close the current GUIMainpanel screen
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new GUIOrder();
+                    }
+                });
+            }
+        });
 
         topPanel.add(button1);
         topPanel.add(button2);
@@ -104,25 +113,9 @@ public class GUIMainpanel extends JFrame {
                     }
                 }
                 int[] clickedSquaresArray = clickedSquares.stream().mapToInt(Integer::intValue).toArray();
-                Stockitems coordinaten = new Stockitems();
-                BPP binpacking = new BPP();
-//todo          SerialComm communicatie = new SerialComm(??);
-                try {
-                    // BinPacking
-                    int[] BinPP = coordinaten.getGewicht(clickedSquaresArray);
-                    ArrayList<ArrayList<Integer>> result = binpacking.bestFit(BinPP, clickedSquaresArray);
-                    // Coordinaten sturen
-                    ArrayList<ArrayList<String>> coord = coordinaten.getCoordinaten(clickedSquaresArray);
-                    for (ArrayList<String> coordinate : coord) {
-                        int x = Integer.parseInt(coordinate.get(0));
-                        int y = Integer.parseInt(coordinate.get(1));
-//todo                   communicatie.stuurCoords(x, y);
-                    }
-
-                    displayResult(clickedSquares, result);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
+                // Perform your desired actions with the clicked squares here
+                // ...
+                displayResult(clickedSquares);
             }
         });
 
@@ -146,34 +139,23 @@ public class GUIMainpanel extends JFrame {
         return button;
     }
 
-    private void displayResult(ArrayList<Integer> clickedSquares, ArrayList<ArrayList<Integer>> result) {
-        StringBuilder orderBuilder = new StringBuilder();
+    private void displayResult(ArrayList<Integer> clickedSquares) {
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < clickedSquares.size(); i++) {
             if (i > 0) {
-                orderBuilder.append(", ");
+                builder.append(", ");
             }
-            orderBuilder.append(clickedSquares.get(i));
+            builder.append(clickedSquares.get(i));
         }
-        String order = orderBuilder.toString();
+        String result = builder.toString();
+        textArea.setText("Clicked Squares: " + result);
+    }
 
-        StringBuilder binBuilder = new StringBuilder();
-        for (int i = 0; i < result.size(); i++) {
-            ArrayList<Integer> bin = result.get(i);
-            StringBuilder binContents = new StringBuilder();
-            for (int j = 0; j < bin.size(); j++) {
-                if (j > 0) {
-                    binContents.append(", ");
-                }
-                binContents.append(bin.get(j));
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new GUIMainpanel();
             }
-            String binString = "Bin " + (i + 1) + ": " + binContents.toString();
-            binBuilder.append(binString);
-            if (i < result.size() - 1) {
-                binBuilder.append(", ");
-            }
-        }
-        String bins = binBuilder.toString();
-
-        textArea.setText("Order = " + order + "\nBPP = " + bins);
+        });
     }
 }

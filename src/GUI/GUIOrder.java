@@ -54,7 +54,13 @@ public class GUIOrder extends JFrame {
         JButton backButton = new JButton("Terug");
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Add code to go back to the previous screen
+                dispose(); // Close the current GUIOrder screen
+                // Add code here to go back to the main GUI screen (GUIMainpanel)
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new GUIMainpanel(); // Create a new instance of GUIMainpanel
+                    }
+                });
             }
         });
 
