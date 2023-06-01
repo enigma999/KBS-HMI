@@ -27,6 +27,7 @@ public class BruteForce implements Algoritme {
         return "BruteForce";
     }
 
+
     private static void generatePermutationsHelper(ArrayList<Pakket> pakketjes, int[] path, boolean[] used, int index, int n) {
         if (index == n) {
             double distance = calculateDistance(pakketjes, path);

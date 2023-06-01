@@ -75,6 +75,7 @@ public class SerialComm implements Runnable{
         return coordinaten;
     }
 
+
     public void leveren() {
         isSendingData = true;
         command = "l";
@@ -86,6 +87,7 @@ public class SerialComm implements Runnable{
         command = "o";
         stuurCommand(command);
     }
+
 
     //private methode die wordt gebruikt door elke stuur methode om de informatie te sturen.
     private void stuurCommand(String command) {

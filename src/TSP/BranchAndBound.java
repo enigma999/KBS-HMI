@@ -45,9 +45,12 @@ public class BranchAndBound implements Algoritme{
         return pakketjes;
     }
 
+
+
     public String getNaam() {
         return "BranchAndBound";
     }
+
 
     private static ArrayList<Pakket> rearrangePakketjes(ArrayList<Pakket> pakketjes, RouteWrapper bestRoute) {
         int[] locations = bestRoute.getLocations();

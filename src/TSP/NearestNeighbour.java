@@ -24,9 +24,14 @@ public class NearestNeighbour implements Algoritme {
         return path;
     }
 
+
+    public String getNaam() {
+        return "Nearest Neighbour";
+
     public String getNaam() {
         return "Nearest Neighbour";
     }
+
 
 
     private static Pakket getClosest(ArrayList<Pakket> pakketjes) {
