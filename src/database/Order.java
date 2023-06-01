@@ -8,6 +8,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+// getOrderStockID(), input is int(orderid), hij returnt een array met de stockitemids die bij de order horen.
+// getOrderLines(), input is int(orderid), hij returnt een array met de orderlineids die bij de order horen.
+// getOrderInfo(), input is int(orderid), hij return een array met de items, hoeveelheid en prijs die bij de order passen.
+// getCustomerInfo(), input is int(orderid), returnt naam en adres.
+// getOrderDate(), input is int(orderid), returnt orderid en orderdatum.
+// printPakBon(), input is int(orderid), print de pakbon in de terminal.
+// getPakBon(), input is int(orderid), returnt een array met alle informatie van de pakbon.
+// isPicked(), input is int(orderid), geen output, zorgt dat de tabel is picked wordt bijgewerkt.
 public class Order extends Connectie {
     public int getNextOrderID() throws SQLException {
         int nextOrderID = 0;
