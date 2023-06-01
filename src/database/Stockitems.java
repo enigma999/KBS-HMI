@@ -116,4 +116,7 @@ public class Stockitems extends Connectie {
         statement.setDouble(5, unitPrice);
         statement.executeUpdate();
     }
+
+    public void UpdateOrder(int orderID, String name, String address, int quantity) {
+    }
 }
