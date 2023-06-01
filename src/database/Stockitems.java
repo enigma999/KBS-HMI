@@ -12,10 +12,10 @@ import java.util.Random;
 // InsertOrder(), input is een int[] van stockitemids en een int[] van quantities, geen output
 
 public class Stockitems extends Connectie {
-    public ArrayList<java.lang.String> getCoordinaten(int stockitemid) throws SQLException {
+    public ArrayList<String> getCoordinaten(int stockitemid) throws SQLException {
         if (!this.isConnected())
             this.connect();
-        ArrayList<ArrayList<java.lang.String>> result = queryResult("select x, y from stockitemholding where StockItemID = " + stockitemid);
+        ArrayList<ArrayList<String>> result = queryResult("select x, y from stockitemholding where StockItemID = " + stockitemid);
         return (result.get(0));
     }
 
