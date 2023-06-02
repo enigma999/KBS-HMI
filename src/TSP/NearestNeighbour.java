@@ -20,7 +20,6 @@ public class NearestNeighbour implements Algoritme {
             startX = pakket.getX();
             startY = pakket.getY();
         }
-        System.out.println("Afstand: " + afstand);
         return path;
     }
 

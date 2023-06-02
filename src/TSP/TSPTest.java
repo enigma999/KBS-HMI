@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import static java.lang.Math.sqrt;
 
 public class TSPTest {
-
-
-
-
     public static AlgValues execTSP(Magazijn magazijn, Algoritme algoritme) {
         AlgValues algValues = new AlgValues();
         final long startTime = System.nanoTime();
