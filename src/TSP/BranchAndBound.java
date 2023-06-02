@@ -28,20 +28,13 @@ public class BranchAndBound implements Algoritme{
             RouteWrapper routeToCheck = determineNextNode(routes,upperbound);
             if(routeToCheck!=null) {
                 routes.addAll(lookForNextNodes(routeToCheck, pakketjes));
-
-//                System.out.println(Arrays.toString(routeToCheck.getLocations()));
             }
             routes.remove(routeToCheck);
             upperbound = findNewUpperbound(routes);
-//            System.out.println(upperbound);
-//            if(FindShortestCompleteRoute(routes)!=null) {
-//                System.out.println(FindShortestCompleteRoute(routes).getLength());
-//            }
 
         }
         RouteWrapper bestRoute = findShortestCompleteRoute(routes);
         pakketjes= rearrangePakketjes(pakketjes, bestRoute);
-        System.out.println(bestRoute.getLength());
         return pakketjes;
     }
 
