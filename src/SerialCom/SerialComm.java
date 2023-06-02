@@ -68,17 +68,6 @@ public class SerialComm implements Runnable{
 
     }
 
-    public ArrayList<Integer> getCoords(int stockID) throws SQLException {
-        ArrayList<Integer> coordinaten = new ArrayList<>();
-        Stockitems connectie = new Stockitems();
-        for (String coord : connectie.getCoordinaten(stockID)) {
-            Integer coordinaat = Integer.parseInt(coord);
-            coordinaten.add(coordinaat);
-        }
-        return coordinaten;
-    }
-
-
     public void leveren() {
         isSendingData = true;
         command = "l";
@@ -131,8 +120,14 @@ public class SerialComm implements Runnable{
                     String receivedData = data.trim();
                     if (receivedData.equals("Gelukt")) {
                         System.out.println("gelukt");
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                         sendNext = true;
                         iterator++;
+
                     }
 //                    System.out.println("Received data: " + receivedData);
                 }

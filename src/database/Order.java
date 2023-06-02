@@ -93,7 +93,7 @@ public class Order extends Connectie {
 
         ArrayList<ArrayList<String>> result = queryResult("select CustomerID from ordertabel where OrderID = " + orderid);
         String customerId = result.get(0).get(0);
-        ArrayList<ArrayList<String>> result2 = queryResult("select CustomerName from customer where CustomerID = " + customerId);
+        ArrayList<ArrayList<String>> result2 = queryResult("select CustomerName, Address from customer where CustomerID = " + customerId);
         return result2.get(0);
     }
 

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import BPP.BPP;
+import TSP.*;
 import database.Stockitems;
 import SerialCom.SerialComm;
 
@@ -17,6 +18,8 @@ public class GUIMainpanel extends JFrame implements Runnable{
     private JTextArea textArea;
     private SerialComm communicatie;
     private boolean sturen = false;
+    private ArrayList<int[]> tspcoord;
+    private boolean lossen = false;
 
     public GUIMainpanel() throws SQLException {
         communicatie = new SerialComm("COM6");
@@ -27,7 +30,9 @@ public class GUIMainpanel extends JFrame implements Runnable{
 
         setTitle("Drie-panel GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setPreferredSize(new Dimension(1920, 1040));
+
+        setVisible(true);
 
         // Bovenste Menubalk
         JPanel topPanel = new JPanel();
@@ -38,34 +43,21 @@ public class GUIMainpanel extends JFrame implements Runnable{
         JButton yellowButton = createColorButton(Color.YELLOW);
         JButton greenButton = createColorButton(Color.GREEN);
 
-        topPanel.add(redButton);
-        topPanel.add(yellowButton);
-        topPanel.add(greenButton);
-
-        JButton button1 = createButton("TSP Test");
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-
         // Noodstop
         redButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 communicatie.noodstop();
-                sturen = false;
             }
         });
-// Manual
+        // Manual
         yellowButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 communicatie.besturing(false);
             }
         });
-// Automatisch
+        // Automatisch
         greenButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -73,10 +65,43 @@ public class GUIMainpanel extends JFrame implements Runnable{
             }
         });
 
-        JButton button2 = createButton("Orders");
+        topPanel.add(redButton);
+        topPanel.add(yellowButton);
+        topPanel.add(greenButton);
 
-        topPanel.add(button1);
-        topPanel.add(button2);
+
+        // TSP scherm
+        JButton tspknop = createButton("TSP Test");
+        tspknop.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Close the current GUIMainpanel screen
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        Magazijn testmagazijn = new Magazijn(6, 10, 10);
+                        new TSPTestFrame(testmagazijn);
+                    }
+                });
+            }
+        });
+        // Order
+        JButton orderbutton = createButton("Orders");
+        orderbutton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Close the current GUIMainpanel screen
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new GUIOrder();
+                    }
+                });
+            }
+        });
+
+        topPanel.add(tspknop);
+        topPanel.add(orderbutton);
+
+        topPanel.add(tspknop);
+        topPanel.add(orderbutton);
 
         add(topPanel, BorderLayout.NORTH);
 
@@ -147,20 +172,17 @@ public class GUIMainpanel extends JFrame implements Runnable{
                 int[] clickedSquaresArray = clickedSquares.stream().mapToInt(Integer::intValue).toArray();
                 Stockitems coordinaten = new Stockitems();
                 BPP binpacking = new BPP();
+                TSP tsp = new TSP();
                 try {
                     // BinPacking
                     int[] BinPP = coordinaten.getGewicht(clickedSquaresArray);
                     ArrayList<ArrayList<Integer>> result = binpacking.bestFit(BinPP, clickedSquaresArray);
                     // Coordinaten sturen
-                    ArrayList<ArrayList<String>> coord = coordinaten.getCoordinaten(clickedSquaresArray);
-//                    for (ArrayList<String> coordinate : coord) {
-//                        int x = Integer.parseInt(coordinate.get(0));
-//                        int y = Integer.parseInt(coordinate.get(1));
-//                        communicatie.stuurCoords(x, y);
-//                    }
-//                    new Scanner(System.in).nextLine();
+                    ArrayList<int[]> coord = coordinaten.getCoordinaten(clickedSquaresArray);
+                    tspcoord = tsp.getBranchBound(coord);
+
                     sturen = true;
-                    displayResult(clickedSquares, result);
+                    displayResult(clickedSquares, result, tspcoord);
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -189,7 +211,8 @@ public class GUIMainpanel extends JFrame implements Runnable{
         return button;
     }
 
-    private void displayResult(ArrayList<Integer> clickedSquares, ArrayList<ArrayList<Integer>> result) {
+    private void displayResult(ArrayList<Integer> clickedSquares, ArrayList<ArrayList<Integer>> result, ArrayList<int[]> tspcoord) {
+        //Order
         StringBuilder orderBuilder = new StringBuilder();
         for (int i = 0; i < clickedSquares.size(); i++) {
             if (i > 0) {
@@ -198,7 +221,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
             orderBuilder.append(clickedSquares.get(i));
         }
         String order = orderBuilder.toString();
-
+        //BPP
         StringBuilder binBuilder = new StringBuilder();
         for (int i = 0; i < result.size(); i++) {
             ArrayList<Integer> bin = result.get(i);
@@ -216,8 +239,18 @@ public class GUIMainpanel extends JFrame implements Runnable{
             }
         }
         String bins = binBuilder.toString();
+        //TSP
+        StringBuilder tspCoordBuilder = new StringBuilder();
+        for (int i = 0; i < tspcoord.size(); i++) {
+            int[] coords = tspcoord.get(i);
+            if (i > 0) {
+                tspCoordBuilder.append(" ---> ");
+            }
+            tspCoordBuilder.append(coords[0]).append(", ").append(coords[1]);
+        }
+        String tspCoords = tspCoordBuilder.toString();
 
-        textArea.setText("Order = " + order + "\nBPP = " + bins);
+        textArea.setText("Order = " + order + "\nBPP = " + bins + "\nTSP route = " + tspCoords);
     }
 
 
@@ -232,31 +265,30 @@ public class GUIMainpanel extends JFrame implements Runnable{
     }
 
     public void run() {
-        ArrayList<int[]> arrayList = new ArrayList<>();
         int i = 0;
-        int[] array1 = {1, 2};
-        int[] array2 = {3, 3};
-        int[] array3 = {2, 4};
-        int[] array4 = {4,0};
 
-        arrayList.add(array1);
-        arrayList.add(array2);
-        arrayList.add(array3);
 
         while (true) {
 
             if (sturen) {
+                ArrayList<int[]> arrayList = tspcoord;
                 int drietal = (communicatie.getIterator()) % 3;
-                boolean lossen = drietal ==0 && communicatie.getIterator()!=0;
+                lossen = drietal ==0 && communicatie.getIterator()!=0;
                 System.out.println(communicatie.getIterator());
                 if (lossen) {
                     communicatie.leveren();
+
+
                 }
                 if (communicatie.getSendNext() && !lossen) {
-                    communicatie.setSendNext(false);
-                    int[] coordinaten = arrayList.get(i);
-                    communicatie.stuurCoords(coordinaten[0], coordinaten[1]);
-                    i++;
+                    if (i < arrayList.size()) {
+                        communicatie.setSendNext(false);
+                        int[] coordinaten = arrayList.get(i);
+                        communicatie.stuurCoords(coordinaten[0], coordinaten[1]);
+                        i++;
+
+                    }
+
                 }
 
             }
