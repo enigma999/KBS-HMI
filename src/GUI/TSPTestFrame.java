@@ -3,6 +3,9 @@ import TSP.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 
 public class TSPTestFrame extends JFrame {
@@ -28,6 +31,21 @@ public class TSPTestFrame extends JFrame {
         topPanel.setPreferredSize(new Dimension(getWidth(), 50)); // Dikkere menubalk
 
         JButton button1 = new JButton("Terug");
+        button1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Close the current GUIOrder screen
+                // Add code here to go back to the main GUI screen (GUIMainpanel)
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        try {
+                            new GUIMainpanel(); // Create a new instance of GUIMainpanel
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
+            }
+        });
 
 
         topPanel.add(button1);

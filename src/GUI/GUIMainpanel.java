@@ -74,7 +74,8 @@ public class GUIMainpanel extends JFrame implements Runnable{
                 dispose(); // Close the current GUIMainpanel screen
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-//todo                     new TSPTestFrame();
+                    Magazijn testmagazijn = new Magazijn(6, 10, 10);
+                        new TSPTestFrame(testmagazijn);
                     }
                 });
             }
@@ -208,6 +209,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
     }
 
     private void displayResult(ArrayList<Integer> clickedSquares, ArrayList<ArrayList<Integer>> result, ArrayList<int[]> tspcoord) {
+        //Order
         StringBuilder orderBuilder = new StringBuilder();
         for (int i = 0; i < clickedSquares.size(); i++) {
             if (i > 0) {
@@ -216,7 +218,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
             orderBuilder.append(clickedSquares.get(i));
         }
         String order = orderBuilder.toString();
-
+        //BPP
         StringBuilder binBuilder = new StringBuilder();
         for (int i = 0; i < result.size(); i++) {
             ArrayList<Integer> bin = result.get(i);
@@ -234,7 +236,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
             }
         }
         String bins = binBuilder.toString();
-
+        //TSP
         StringBuilder tspCoordBuilder = new StringBuilder();
         for (int i = 0; i < tspcoord.size(); i++) {
             int[] coords = tspcoord.get(i);
@@ -265,7 +267,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
         int[] array1 = {1, 2};
         int[] array2 = {3, 3};
         int[] array3 = {2, 4};
-        int[] array4 = {4,0};
+        int[] array4 = {4, 0};
 
         arrayList.add(array1);
         arrayList.add(array2);
