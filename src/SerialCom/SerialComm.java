@@ -67,18 +67,6 @@ public class SerialComm implements Runnable{
 
 
     }
-
-//    public ArrayList<Integer> getCoords(int stockID) throws SQLException {
-//        ArrayList<Integer> coordinaten = new ArrayList<>();
-//        Stockitems connectie = new Stockitems();
-//        for (String coord : connectie.getCoordinaten(stockID)) {
-//            Integer coordinaat = Integer.parseInt(coord);
-//            coordinaten.add(coordinaat);
-//        }
-//        return coordinaten;
-//    }
-
-
     public void leveren() {
         isSendingData = true;
         command = "l";
