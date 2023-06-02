@@ -1,21 +1,35 @@
 package GUI;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Scanner;
 
-public class GUIMainpanel extends JFrame {
+import BPP.BPP;
+import TSP.*;
+import database.Stockitems;
+import SerialCom.SerialComm;
+
+public class GUIMainpanel extends JFrame implements Runnable{
     private ArrayList<Integer> clickedSquares = new ArrayList<>();
     private JTextArea textArea;
+    private SerialComm communicatie;
+    private boolean sturen = false;
 
-    public GUIMainpanel() {
+    public GUIMainpanel() throws SQLException {
+        communicatie = new SerialComm("COM7");
+        Thread thread = new Thread(communicatie);
+        thread.start();
+        new Thread(this).start();
+
         setTitle("Drie-panel GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setPreferredSize(new Dimension(1920, 1040));
+
+        setVisible(true);
 
         // Bovenste Menubalk
         JPanel topPanel = new JPanel();
@@ -26,13 +40,49 @@ public class GUIMainpanel extends JFrame {
         JButton yellowButton = createColorButton(Color.YELLOW);
         JButton greenButton = createColorButton(Color.GREEN);
 
+        // Noodstop
+        redButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                communicatie.noodstop();
+            }
+        });
+        // Manual
+        yellowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                communicatie.besturing(false);
+            }
+        });
+        // Automatisch
+        greenButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                communicatie.besturing(true);
+            }
+        });
+
         topPanel.add(redButton);
         topPanel.add(yellowButton);
         topPanel.add(greenButton);
 
-        JButton button1 = createButton("TSP Test");
-        JButton button2 = createButton("Orders");
-        button2.addActionListener(new ActionListener() {
+
+        // TSP scherm
+        JButton tspknop = createButton("TSP Test");
+        tspknop.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Close the current GUIMainpanel screen
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                    Magazijn testmagazijn = new Magazijn(6, 10, 10);
+                        new TSPTestFrame(testmagazijn);
+                    }
+                });
+            }
+        });
+        // Order
+        JButton orderbutton = createButton("Orders");
+        orderbutton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose(); // Close the current GUIMainpanel screen
 
@@ -44,8 +94,11 @@ public class GUIMainpanel extends JFrame {
             }
         });
 
-        topPanel.add(button1);
-        topPanel.add(button2);
+        topPanel.add(tspknop);
+        topPanel.add(orderbutton);
+
+        topPanel.add(tspknop);
+        topPanel.add(orderbutton);
 
         add(topPanel, BorderLayout.NORTH);
 
@@ -76,6 +129,7 @@ public class GUIMainpanel extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JButton square = (JButton) e.getSource();
+
                 if (clickCount < 3) {
                     square.setBackground(Color.GRAY);
                     square.setPreferredSize(new Dimension(10, 10));
@@ -113,9 +167,23 @@ public class GUIMainpanel extends JFrame {
                     }
                 }
                 int[] clickedSquaresArray = clickedSquares.stream().mapToInt(Integer::intValue).toArray();
-                // Perform your desired actions with the clicked squares here
-                // ...
-                displayResult(clickedSquares);
+                Stockitems coordinaten = new Stockitems();
+                BPP binpacking = new BPP();
+                TSP tsp = new TSP();
+                try {
+                    // BinPacking
+                    int[] BinPP = coordinaten.getGewicht(clickedSquaresArray);
+                    ArrayList<ArrayList<Integer>> result = binpacking.bestFit(BinPP, clickedSquaresArray);
+                    // Coordinaten sturen
+                    ArrayList<int[]> coord = coordinaten.getCoordinaten(clickedSquaresArray);
+                    ArrayList<int[]> tspcoord = tsp.getBranchBound(coord);
+
+                    sturen = true;
+                    displayResult(clickedSquares, result, tspcoord);
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -125,6 +193,7 @@ public class GUIMainpanel extends JFrame {
         pack();
         setVisible(true);
     }
+
 
     private JButton createColorButton(Color color) {
         JButton button = new JButton();
@@ -139,23 +208,102 @@ public class GUIMainpanel extends JFrame {
         return button;
     }
 
-    private void displayResult(ArrayList<Integer> clickedSquares) {
-        StringBuilder builder = new StringBuilder();
+    private void displayResult(ArrayList<Integer> clickedSquares, ArrayList<ArrayList<Integer>> result, ArrayList<int[]> tspcoord) {
+        //Order
+        StringBuilder orderBuilder = new StringBuilder();
         for (int i = 0; i < clickedSquares.size(); i++) {
             if (i > 0) {
-                builder.append(", ");
+                orderBuilder.append(", ");
             }
-            builder.append(clickedSquares.get(i));
+            orderBuilder.append(clickedSquares.get(i));
         }
-        String result = builder.toString();
-        textArea.setText("Clicked Squares: " + result);
+        String order = orderBuilder.toString();
+        //BPP
+        StringBuilder binBuilder = new StringBuilder();
+        for (int i = 0; i < result.size(); i++) {
+            ArrayList<Integer> bin = result.get(i);
+            StringBuilder binContents = new StringBuilder();
+            for (int j = 0; j < bin.size(); j++) {
+                if (j > 0) {
+                    binContents.append(", ");
+                }
+                binContents.append(bin.get(j));
+            }
+            String binString = "Bin " + (i + 1) + ": " + binContents.toString();
+            binBuilder.append(binString);
+            if (i < result.size() - 1) {
+                binBuilder.append(", ");
+            }
+        }
+        String bins = binBuilder.toString();
+        //TSP
+        StringBuilder tspCoordBuilder = new StringBuilder();
+        for (int i = 0; i < tspcoord.size(); i++) {
+            int[] coords = tspcoord.get(i);
+            if (i > 0) {
+                tspCoordBuilder.append(" ---> ");
+            }
+            tspCoordBuilder.append(coords[0]).append(", ").append(coords[1]);
+        }
+        String tspCoords = tspCoordBuilder.toString();
+
+        textArea.setText("Order = " + order + "\nBPP = " + bins + "\nTSP route = " + tspCoords);
     }
 
+
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new GUIMainpanel();
+        try {
+            new GUIMainpanel();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void run() {
+        ArrayList<int[]> arrayList = new ArrayList<>();
+        int i = 0;
+        int[] array1 = {1, 2};
+        int[] array2 = {3, 3};
+        int[] array3 = {2, 4};
+        int[] array4 = {4, 0};
+
+        arrayList.add(array1);
+        arrayList.add(array2);
+        arrayList.add(array3);
+
+        while (true) {
+
+            if (sturen) {
+                int drietal = (communicatie.getIterator()) % 3;
+                boolean lossen = drietal ==0 && communicatie.getIterator()!=0;
+                if (lossen) {
+                    communicatie.leveren();
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                if (communicatie.getSendNext() && !lossen) {
+                    if (arrayList.size() < i) {
+                        communicatie.setSendNext(false);
+                        int[] coordinaten = arrayList.get(i);
+                        communicatie.stuurCoords(coordinaten[0], coordinaten[1]);
+                        i++;
+                    }
+
+                }
+
             }
-        });
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 }

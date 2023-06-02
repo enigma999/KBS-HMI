@@ -2,6 +2,7 @@
 // van de arduino te printen in de console.
 
 package SerialCom;
+import GUI.GUIMainpanel;
 import com.fazecast.jSerialComm.*;
 import database.Connectie;
 import database.Stockitems;
@@ -15,6 +16,8 @@ import java.util.Scanner;
 
 public class SerialComm implements Runnable{
     private int baudRate = 9600;
+    private boolean sendNext = true;
+    private int iterator = 0;
     private OutputStream outputStream;
     private Scanner scanner = new Scanner(System.in);
     private String command;
@@ -40,19 +43,19 @@ public class SerialComm implements Runnable{
     //Stuurt de coordinaten naar de arduino.
     public void stuurCoords(int x, int y) {
         isSendingData = true;
-        command = "c " + " " + x + " " + y;
+        command = "c " + x + " " + y;
         stuurCommand(command);
 
     }
 
-  //Stuurt een sein voor de noodstop.
+    //Stuurt een sein voor de noodstop.
     public void noodstop() {
         isSendingData = true;
         command = "n";
         stuurCommand(command);
     }
 
-   //Hiermee kun je de besturing aanpassen, true voor automatisch en false voor handmatig.
+    //Hiermee kun je de besturing aanpassen, true voor automatisch en false voor handmatig.
     public void besturing(boolean automatisch) {
         isSendingData = true;
         if (automatisch) {
@@ -64,18 +67,6 @@ public class SerialComm implements Runnable{
 
 
     }
-
-    public ArrayList<Integer> getCoords(int stockID) throws SQLException {
-        ArrayList<Integer> coordinaten = new ArrayList<>();
-        Stockitems connectie = new Stockitems();
-        for (String coord : connectie.getCoordinaten(stockID)) {
-            Integer coordinaat = Integer.parseInt(coord);
-            coordinaten.add(coordinaat);
-        }
-        return coordinaten;
-    }
-
-
     public void leveren() {
         isSendingData = true;
         command = "l";
@@ -88,6 +79,20 @@ public class SerialComm implements Runnable{
         stuurCommand(command);
     }
 
+    public void setSendNext(boolean sendNext) {
+        this.sendNext = sendNext;
+    }
+    public boolean getSendNext() {
+        return sendNext;
+    }
+
+    public int getIterator() {
+        return iterator;
+    }
+
+    public void setIterator(int iterator) {
+        this.iterator = iterator;
+    }
 
     //private methode die wordt gebruikt door elke stuur methode om de informatie te sturen.
     private void stuurCommand(String command) {
@@ -110,11 +115,13 @@ public class SerialComm implements Runnable{
                         throw new RuntimeException(e);
                     }
 
-                    String receivedData = new String(buffer, 0, bytesRead);
-                    if (receivedData.equals("gelukt")) {
-                        //volgende pakktje in main gaat een counter omhoog
+                    String data = new String(buffer, 0, bytesRead);
+                    String receivedData = data.trim();
+                    if (receivedData.equals("Gelukt")) {
+                        sendNext = true;
+                        iterator++;
                     }
-                    System.out.println("Received data: " + receivedData);
+//                    System.out.println("Received data: " + receivedData);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
