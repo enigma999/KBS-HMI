@@ -148,7 +148,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
             rightPanel.add(square);
         }
 
-        add(rightPanel, BorderLayout.CENTER);
+        add(rightPanel, BorderLayout.EAST);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(Color.WHITE);
