@@ -67,6 +67,7 @@ public class SerialComm implements Runnable{
 
 
     }
+
     public void leveren() {
         isSendingData = true;
         command = "l";
@@ -118,8 +119,15 @@ public class SerialComm implements Runnable{
                     String data = new String(buffer, 0, bytesRead);
                     String receivedData = data.trim();
                     if (receivedData.equals("Gelukt")) {
+                        System.out.println("gelukt");
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                         sendNext = true;
                         iterator++;
+
                     }
 //                    System.out.println("Received data: " + receivedData);
                 }

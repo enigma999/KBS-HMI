@@ -18,12 +18,15 @@ public class GUIMainpanel extends JFrame implements Runnable{
     private JTextArea textArea;
     private SerialComm communicatie;
     private boolean sturen = false;
+    private ArrayList<int[]> tspcoord;
+    private boolean lossen = false;
 
     public GUIMainpanel() throws SQLException {
-        communicatie = new SerialComm("COM7");
+        communicatie = new SerialComm("COM6");
         Thread thread = new Thread(communicatie);
         thread.start();
         new Thread(this).start();
+
 
         setTitle("Drie-panel GUI");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,7 +77,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
                 dispose(); // Close the current GUIMainpanel screen
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                    Magazijn testmagazijn = new Magazijn(6, 10, 10);
+                        Magazijn testmagazijn = new Magazijn(6, 10, 10);
                         new TSPTestFrame(testmagazijn);
                     }
                 });
@@ -176,7 +179,7 @@ public class GUIMainpanel extends JFrame implements Runnable{
                     ArrayList<ArrayList<Integer>> result = binpacking.bestFit(BinPP, clickedSquaresArray);
                     // Coordinaten sturen
                     ArrayList<int[]> coord = coordinaten.getCoordinaten(clickedSquaresArray);
-                    ArrayList<int[]> tspcoord = tsp.getBranchBound(coord);
+                    tspcoord = tsp.getBranchBound(coord);
 
                     sturen = true;
                     displayResult(clickedSquares, result, tspcoord);
@@ -262,36 +265,28 @@ public class GUIMainpanel extends JFrame implements Runnable{
     }
 
     public void run() {
-        ArrayList<int[]> arrayList = new ArrayList<>();
         int i = 0;
-        int[] array1 = {1, 2};
-        int[] array2 = {3, 3};
-        int[] array3 = {2, 4};
-        int[] array4 = {4, 0};
 
-        arrayList.add(array1);
-        arrayList.add(array2);
-        arrayList.add(array3);
 
         while (true) {
 
             if (sturen) {
+                ArrayList<int[]> arrayList = tspcoord;
                 int drietal = (communicatie.getIterator()) % 3;
-                boolean lossen = drietal ==0 && communicatie.getIterator()!=0;
+                lossen = drietal ==0 && communicatie.getIterator()!=0;
+                System.out.println(communicatie.getIterator());
                 if (lossen) {
                     communicatie.leveren();
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+
+
                 }
                 if (communicatie.getSendNext() && !lossen) {
-                    if (arrayList.size() < i) {
+                    if (i < arrayList.size()) {
                         communicatie.setSendNext(false);
                         int[] coordinaten = arrayList.get(i);
                         communicatie.stuurCoords(coordinaten[0], coordinaten[1]);
                         i++;
+
                     }
 
                 }
