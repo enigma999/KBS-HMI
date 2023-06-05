@@ -100,9 +100,6 @@ public class GUIMainpanel extends JFrame implements Runnable{
         topPanel.add(tspknop);
         topPanel.add(orderbutton);
 
-        topPanel.add(tspknop);
-        topPanel.add(orderbutton);
-
         add(topPanel, BorderLayout.NORTH);
 
         // Linkerpanel voor tekst
